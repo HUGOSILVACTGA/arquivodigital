@@ -4340,12 +4340,15 @@ document.addEventListener("paste", e => {
   async function persist(){await putA('state',A.state);}
   function who(){return A.session?A.session.nome:'Sistema';}
   function can(p){return !!A.session&&(A.session.perfil==='admin'||!!(A.session.perms&&A.session.perms[p]));}
-  function record(type,action,target,detail){
-    const row={id:A.state.seq++,at:new Date().toISOString(),user:who(),login:A.session?A.session.login:'',type,action,target:String(target||''),detail:String(detail||'')};
-    (type==='processamento'?A.state.history:A.state.audit).push(row);
-    const cap=type==='processamento'?15000:25000;const arr=type==='processamento'?A.state.history:A.state.audit;if(arr.length>cap)arr.splice(0,arr.length-cap);
-    persist().catch(e=>console.warn('Falha ao salvar auditoria local',e));
+  function record(type,action,target,detail,meta){
+    meta=meta||{};const rawTarget=String(target||''),ids=rawTarget.split(/[;,]/).map(v=>v.trim()).filter(Boolean);let documentContext=[];
+    try{if(typeof state!=='undefined'&&state&&Array.isArray(state.docs))documentContext=state.docs.filter(d=>ids.includes(String(d.id))).map(d=>({id:String(d.id||''),name:String(d.newName||d.originalName||'Documento sem nome'),originalName:String(d.originalName||''),newName:String(d.newName||''),person:String(d.person||''),issuer:String(d.issuer||''),docNumber:String(d.docNumber||''),type:String(d.type||''),folderName:String(d.folderName||''),date:String(d.date||''),status:String(d.status||'')}));}catch(e){}
+    const row={id:A.state.seq++,at:new Date().toISOString(),user:who(),login:A.session?A.session.login:'',type,action,target:rawTarget,detail:String(detail||'')};
+    if(type==='auditoria'){row.command=String(meta.command||action||'Atividade no sistema');row.performed=String(meta.performed||rawTarget||'Atividade registrada');row.status=String(meta.status||'Registrado');if(documentContext.length)row.documentContext=documentContext;}
+    (type==='processamento'?A.state.history:A.state.audit).push(row);const cap=type==='processamento'?15000:25000,arr=type==='processamento'?A.state.history:A.state.audit;if(arr.length>cap)arr.splice(0,arr.length-cap);
+    persist().catch(e=>console.warn('Falha ao salvar auditoria local',e));return row;
   }
+  function finishAudit(row,status,detail){if(!row)return;row.status=status;if(detail)row.detail=String(detail);row.finishedAt=new Date().toISOString();persist().catch(e=>console.warn('Falha ao atualizar auditoria local',e));}
   function toastA(msg){try{if(typeof toast==='function')toast(msg);}catch(e){}}
   function build(){
     const screen=document.createElement('div');screen.id='arqAuthScreen';screen.hidden=true;screen.innerHTML='<div class="authbox"><div class="authbrand"><img alt="Hillo" id="arqAuthLogo" hidden><strong id="arqAuthBrandText">HILLO</strong></div><h2 id="arqAuthTitle">Arquivo Digital</h2><p id="arqAuthDesc"></p><div id="arqAuthFields"></div><div class="autherr" id="arqAuthError"></div><button class="authbtn" id="arqAuthSubmit" type="button"></button><div class="authnote">Acesso individual · Dados armazenados neste navegador</div></div>';
