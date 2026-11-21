@@ -495,6 +495,28 @@ footer.foot{margin-top:34px}
 @media(max-width:900px){#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(3,minmax(120px,1fr))}}
 @media(max-width:620px){#arqAuthPanel .ap-audit-intro{display:block}#arqAuthPanel .ap-audit-search{align-items:stretch;flex-direction:column}#arqAuthPanel .ap-audit-search input{width:100%}#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#arqAuthPanel .ap-audit-table{max-height:62vh}}
 .ap-audit-detail-content{padding:10px 12px;min-width:260px}.ap-audit-detail-content>p{margin:0 0 10px;line-height:1.5}.ap-audit-detail-content dl{display:grid;grid-template-columns:minmax(130px,190px) minmax(160px,1fr);gap:6px 12px;margin:0}.ap-audit-detail-content dt{font-weight:650;color:var(--muted)}.ap-audit-detail-content dd{margin:0;overflow-wrap:anywhere}.ap-audit-note{font-size:12px;color:var(--muted);margin-top:12px!important}@media(max-width:650px){.ap-audit-detail-content dl{grid-template-columns:1fr;gap:2px}.ap-audit-detail-content dd{margin-bottom:7px}}
+/* Auditoria: tabela completa, legível e responsiva */
+#arqAuthPanel .ap-audit-table{max-height:62vh;overflow:auto}
+#arqAuthPanel .ap-audit-table table{min-width:1160px;width:100%;border-collapse:separate;border-spacing:0}
+#arqAuthPanel .ap-audit-table th{position:sticky;top:0;z-index:2;background:#f2f6fc;color:#29436c;white-space:nowrap}
+#arqAuthPanel .ap-audit-table td{vertical-align:top;line-height:1.45}
+#arqAuthPanel .ap-audit-table td:nth-child(4){min-width:190px}
+#arqAuthPanel .ap-audit-table td:nth-child(5){min-width:230px;white-space:normal;overflow-wrap:anywhere}
+#arqAuthPanel .ap-audit-table td:nth-child(7){min-width:105px}
+#arqAuthPanel .ap-audit-status{display:inline-block;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+#arqAuthPanel .ap-audit-status.ok{background:#e6f5eb;color:#236b3e}
+#arqAuthPanel .ap-audit-status.bad{background:#fdebea;color:#a52d25}
+#arqAuthPanel .ap-audit-status.pending{background:#fff3d6;color:#785500}
+#arqAuthPanel .ap-audit-status.running{background:#e6efff;color:#164b9b}
+#arqAuthPanel .ap-audit-detail summary{cursor:pointer;color:#164b9b;font-weight:700;font-size:12px;white-space:nowrap}
+#arqAuthPanel .ap-audit-detail-content{padding:10px 12px;min-width:260px;max-width:520px;white-space:normal}
+#arqAuthPanel .ap-audit-detail-content>p{margin:0 0 10px;line-height:1.5}
+#arqAuthPanel .ap-audit-detail-content dl{display:grid;grid-template-columns:minmax(130px,190px) minmax(160px,1fr);gap:6px 12px;margin:0}
+#arqAuthPanel .ap-audit-detail-content dt{font-weight:650;color:var(--muted)}
+#arqAuthPanel .ap-audit-detail-content dd{margin:0;overflow-wrap:anywhere}
+#arqAuthPanel .ap-audit-note{font-size:12px;color:var(--muted);margin-top:12px!important}
+#arqAuthPanel .ap-audit-intro p{max-width:760px;line-height:1.5}
+@media(max-width:650px){#arqAuthPanel .ap-audit-detail-content dl{grid-template-columns:1fr;gap:2px}#arqAuthPanel .ap-audit-detail-content dd{margin-bottom:7px}#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -4388,17 +4410,35 @@ document.addEventListener("paste", e => {
   async function logout(){record('auditoria','Logout','Sessão encerrada','');await persist();A.session=null;try{sessionStorage.removeItem('arquivo_digital_user');}catch(e){}$a('#arqAuthToolbar').hidden=true;$a('#arqAuthPanel').hidden=true;showAuth(false);}
   const ACTION_PERM={pick:'importar',pickdir:'importar',tab:'visualizar',mode:'visualizar',nav:'visualizar',open:'visualizar',flat:'visualizar',sel:'visualizar',selall:'visualizar',view:'visualizar',showtext:'visualizar',edit:'editar','ed-save':'editar','fix-save':'editar','fix-edit':'editar','rv-recalc':'revisar','rv-learn':'revisar','rv-confirm':'revisar','rv-save-arch':'revisar','review-open':'revisar','archive-sel':'arquivar','archive-all':'arquivar',del:'excluir','b-del':'excluir','remove-sel':'excluir','t-purge':'excluir','t-empty':'excluir','folder-del':'pastas', 't-restore':'excluir','t-restore-all':'excluir',reset:'excluir',hardreset:'excluir',share:'exportar',dl:'exportar','b-dl':'exportar','b-share':'exportar','export-all':'exportar','bk-export':'backup','bk-import':'backup','kb-save':'aprendizado','kb-edit':'aprendizado','kb-cancel':'aprendizado','kb-del':'aprendizado','kb-boot':'aprendizado','kb-apply':'aprendizado','kb-test':'aprendizado','kb-export':'aprendizado','kb-import':'aprendizado',teach:'aprendizado',tk:'aprendizado',tmode:'aprendizado',tclr:'aprendizado',tsave:'aprendizado',tdel:'aprendizado','dir-pick':'pastas','dir-forget':'pastas','dir-forgetall':'pastas','dir-rescan':'pastas','dir-sync':'pastas','dir-syncfull':'pastas','dir-fix':'pastas','cfg-pick':'pastas','cfg-clear':'pastas','dir-grant':'pastas','folders-open':'pastas',reread:'revisar',reocr:'revisar',ai:'revisar',aiarch:'revisar','fix-reread':'revisar','fix-reread-all':'revisar','fix-date':'editar','fix-name':'editar','fix-edit':'editar','ed-save':'editar','kbfile':'aprendizado'};
   function blocked(msg){toastA(msg||'Seu usuário não tem permissão para realizar esta ação.');}
+  const AUDIT_WRAPPED_ACTS=new Set(['pick','pickdir','archive-sel','archive-all','del','remove-sel','t-purge','t-empty','t-restore','t-restore-all','ed-save','rv-save-arch','reread','reocr','reset','hardreset','ai','aiarch','rv-learn','rv-confirm','kb-save','bk-export','bk-import','dir-sync','dir-syncfull','dir-rescan','folder-del','fix-save']);
   document.addEventListener('click',e=>{
     if(!A.ready)return;
     if(!$a('#arqAuthScreen').hidden){if(!e.target.closest('#arqAuthScreen')){e.preventDefault();e.stopImmediatePropagation();}return;}
     const el=e.target.closest('[data-act]');if(!el)return;const act=el.dataset.act,perm=ACTION_PERM[act];
     if(perm&&!can(perm)){e.preventDefault();e.stopImmediatePropagation();blocked();return;}
-    const label=act.replace(/[-_]/g,' ');record('auditoria','Ação no sistema',label,el.dataset.id?'Registro '+el.dataset.id:'');
+    if(AUDIT_WRAPPED_ACTS.has(act))return;
+    const label=act.replace(/[-_]/g,' ');
+    record('auditoria','Ação no sistema',label,el.dataset.id?'Registro '+el.dataset.id:'',{command:'Interação com o sistema',performed:auditActionLabel(label),status:'Registrado'});
   },true);
   function guardDocField(e){if(!A.ready||!A.session)return;const el=e.target;if(el.dataset&&el.dataset.f&&!can('editar')){e.preventDefault();e.stopImmediatePropagation();const d=typeof byId==='function'?byId(el.dataset.id):null;if(d)el.value=el.dataset.f==='value'?(d.value==null?'':String(d.value)):String(d[el.dataset.f]??'');blocked('Seu usuário não tem permissão para editar documentos.');return;}if(e.type==='change'&&el.dataset&&el.dataset.f){const d=typeof byId==='function'?byId(el.dataset.id):null;record('auditoria','Alterou campo de documento',d?(d.originalName||d.newName):el.dataset.id,el.dataset.f);}}
   document.addEventListener('input',guardDocField,true);document.addEventListener('change',guardDocField,true);
-  function wrap(name,perm,label,history){const original=window[name];if(typeof original!=='function')return;window[name]=async function(...args){if(A.ready&&!can(perm)){blocked();return;}if(A.ready&&A.session){const target=history&&history.target?history.target(args):'';record('processamento',label,target,history&&history.detail?history.detail(args):'');}try{const result=await original.apply(this,args);if(A.ready&&A.session)record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,history&&history.target?history.target(args):'',name==='addFiles'?(args[0]||[]).length+' arquivo(s) processado(s)':'Operação concluída');return result;}catch(err){if(A.ready&&A.session)record('processamento','Falha durante a operação: '+label,history&&history.target?history.target(args):'',String(err&&err.message||err));throw err;}};}
-  function installWrappers(){
+  function wrap(name,perm,label,history){
+    const original=window[name];if(typeof original!=='function')return;
+    window[name]=async function(...args){
+      if(A.ready&&!can(perm)){blocked();return;}
+      let auditRow=null;const target=history&&history.target?history.target(args):'',detail=history&&history.detail?history.detail(args):'';
+      if(A.ready&&A.session){record('processamento',label,target,detail);auditRow=record('auditoria',label,target,detail,{command:label,performed:target||label,status:'Em andamento'});}
+      try{
+        const result=await original.apply(this,args);
+        if(A.ready&&A.session){const failed=result===false||(result&&typeof result==='object'&&result.success===false);const msg=name==='addFiles'?(args[0]||[]).length+' arquivo(s) processado(s)':(failed?'A função informou que a operação não foi concluída.':'Operação concluída com sucesso.');record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,target,msg);finishAudit(auditRow,failed?'Não concluído':'Concluído',msg);}
+        return result;
+      }catch(err){
+        if(A.ready&&A.session){const reason=String(err&&err.message||err||'Erro não informado');record('processamento','Falha durante a operação: '+label,target,reason);finishAudit(auditRow,'Não concluído',reason);}
+        throw err;
+      }
+    };
+  }
+  function installWrappers(){  function installWrappers(){
     wrap('addFiles','importar','Iniciou leitura de PDFs',{target:a=>Array.from(a[0]||[]).map(f=>f.name).join('; '),detail:a=>(a[0]||[]).length+' arquivo(s) selecionado(s)'});
     wrap('archiveIds','arquivar','Renomeou e arquivou documentos',{target:a=>(a[0]||[]).join('; '),detail:a=>(a[0]||[]).length+' documento(s)'});
     wrap('deleteIds','excluir','Enviou documentos para exclusão',{target:a=>(a[0]||[]).join('; '),detail:a=>(a[0]||[]).length+' documento(s)'});
@@ -4452,119 +4492,33 @@ document.addEventListener("paste", e => {
   }
   function historyHTML(){const q=A.search.toLowerCase(),L=A.state.history.slice().reverse().filter(x=>!q||[x.user,x.action,x.target,x.detail].join(' ').toLowerCase().includes(q));return `<div class="ap-card"><div class="ap-row"><input id="apSearch" placeholder="Buscar processamento, documento ou usuário..." value="${escA(A.search)}" style="flex:1;min-width:220px"><span class="ap-muted">${L.length} registro(s)</span><button class="ap-btn ghost" data-auth="export-history">Exportar JSON</button></div><div class="ap-table"><table><thead><tr><th>Data e hora</th><th>Usuário</th><th>Processamento</th><th>Documento / item</th><th>Detalhes</th></tr></thead><tbody>${L.map(x=>`<tr><td>${new Date(x.at).toLocaleString('pt-BR')}</td><td>${escA(x.user)}</td><td><b>${escA(x.action)}</b></td><td>${escA(x.target)}</td><td>${escA(x.detail)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum processamento registrado.</td></tr>'}</tbody></table></div></div>`;}
   const AUDIT_LABELS={
-    'Ação no sistema':'Ação realizada no sistema','Alterou campo de documento':'Informação do documento alterada',
-    'Tentativa de login inválida':'Tentativa de acesso recusada','Login':'Acesso realizado',
-    'Acesso autorizado':'Sessão iniciada','Logout':'Saiu do sistema','Abriu o sistema':'Abriu o Arquivo Digital',
-    'Criou administrador inicial':'Administrador inicial cadastrado','Alterou usuário':'Dados do usuário alterados',
-    'Cadastrou usuário':'Novo usuário cadastrado','Ativou usuário':'Usuário ativado','Desativou usuário':'Usuário desativado',
-    'Excluiu usuário':'Usuário excluído','Exportou registros':'Registros exportados',
-    'Iniciou leitura de PDFs':'Iniciou a leitura dos documentos','Concluiu: Iniciou leitura de PDFs':'Leitura dos documentos concluída',
-    'Concluiu leitura e classificação dos PDFs':'Leitura e classificação concluídas',
-    'Renomeou e arquivou documentos':'Documento(s) arquivado(s)','Enviou documentos para exclusão':'Documento(s) enviado(s) para a lixeira',
-    'Excluiu documentos definitivamente':'Documento(s) excluído(s) definitivamente','Restaurou documentos da lixeira':'Documento(s) restaurado(s)',
-    'Salvou edição de documento':'Alteração do documento salva','Salvou revisão de documento':'Revisão do documento salva',
-    'Releu documentos':'Leitura dos documentos refeita','Executou OCR em documentos arquivados':'Leitura automática refeita',
-    'Solicitou zerar dados do sistema':'Solicitou apagar os dados do sistema','Solicitou reset completo do sistema':'Solicitou reiniciar o sistema',
-    'Leitura assistida por IA':'Leitura assistida do documento','Leitura assistida por IA no arquivo':'Leitura assistida dos documentos arquivados',
-    'Aplicou aprendizado a partir da revisão':'Aprendizado aplicado','Confirmou dados da revisão':'Dados da revisão confirmados',
-    'Salvou modelo de leitura':'Modelo de leitura salvo','Reaplicou modelos de aprendizado':'Modelos de leitura reaplicados',
-    'Exportou backup completo':'Cópia de segurança criada','Importou backup completo':'Cópia de segurança restaurada',
-    'Sincronizou pasta local':'Pasta local sincronizada','Executou ferramenta de sincronização':'Sincronização executada',
-    'Excluiu pasta do computador':'Pasta excluída','Corrigiu data do documento':'Data do documento corrigida'
+    'Ação no sistema':'Interação com o sistema','Alterou campo de documento':'Alteração de informação do documento','Tentativa de login inválida':'Tentativa de acesso recusada','Login':'Entrada no sistema','Acesso autorizado':'Sessão iniciada','Logout':'Saída do sistema','Abriu o sistema':'Abertura do Arquivo Digital','Criou administrador inicial':'Cadastro do administrador inicial','Alterou usuário':'Alteração de usuário','Cadastrou usuário':'Cadastro de usuário','Ativou usuário':'Ativação de usuário','Desativou usuário':'Desativação de usuário','Excluiu usuário':'Exclusão de usuário','Exportou registros':'Exportação dos registros','Iniciou leitura de PDFs':'Início da leitura dos PDFs','Concluiu: Iniciou leitura de PDFs':'Conclusão da leitura dos PDFs','Concluiu leitura e classificação dos PDFs':'Leitura e classificação dos PDFs','Renomeou e arquivou documentos':'Arquivamento de documentos','Enviou documentos para exclusão':'Envio de documentos para a Lixeira','Excluiu documentos definitivamente':'Exclusão definitiva de documentos','Restaurou documentos da lixeira':'Restauração de documentos','Salvou edição de documento':'Salvamento da edição do documento','Salvou revisão de documento':'Salvamento da revisão do documento','Releu documentos':'Nova leitura de documentos','Executou OCR em documentos arquivados':'Nova leitura automática dos documentos','Solicitou zerar dados do sistema':'Solicitação para apagar os dados do sistema','Solicitou reset completo do sistema':'Solicitação para reiniciar o sistema','Leitura assistida por IA':'Leitura do documento com IA','Leitura assistida por IA no arquivo':'Leitura dos documentos arquivados com IA','Aplicou aprendizado a partir da revisão':'Aplicação do aprendizado da revisão','Confirmou dados da revisão':'Confirmação dos dados da revisão','Salvou modelo de leitura':'Salvamento de modelo de leitura','Reaplicou modelos de aprendizado':'Reaplicação dos modelos de aprendizado','Exportou backup completo':'Criação de cópia de segurança','Importou backup completo':'Restauração de cópia de segurança','Sincronizou pasta local':'Sincronização da pasta do computador','Executou ferramenta de sincronização':'Execução da sincronização','Excluiu pasta do computador':'Exclusão de pasta do computador','Corrigiu data do documento':'Correção da data do documento'
   };
-  function auditOperation(x){
-    const a=String(x.action||'');
-    if(AUDIT_LABELS[a])return AUDIT_LABELS[a];
-    if(/^Falha durante a operação:/i.test(a))return 'Não foi possível concluir a operação';
-    if(/^Concluiu:/i.test(a))return 'Operação concluída';
-    if(/^Ação no sistema$/i.test(a))return 'Ação realizada no sistema';
-    return a.replace(/[_-]+/g,' ').replace(/\b(login|logout|insert|update|delete|restore|backup|export|import|ocr|process|failed|success)\b/gi,w=>({
-      login:'acesso',logout:'saída',insert:'inclusão',update:'alteração',delete:'exclusão',restore:'restauração',
-      backup:'cópia de segurança',export:'exportação',import:'importação',ocr:'leitura automática',
-      process:'processamento',failed:'não concluído',success:'concluído'
-    }[w.toLowerCase()]||w));
-  }
-  function auditResult(x){
-    const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();
-    if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';
-    if(/solicitou/.test(s))return 'Solicitado';
-    if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';
-    if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';
-    return 'Registrado';
-  }
-  function auditDocument(idOrName){
-    const raw=String(idOrName||'').trim(); if(!raw)return null;
-    try{const docs=(typeof state!=='undefined'&&state&&Array.isArray(state.docs))?state.docs:[];const found=docs.find(d=>String(d.id)===raw);if(found)return {name:String(found.newName||found.originalName||'Documento sem nome'),doc:found};}catch(e){}
-    return null;
-  }
-  function auditActionLabel(raw){
-    const key=String(raw||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');
-    const map={'tab':'Acessou uma aba do sistema','menu archives':'Abriu o menu de documentos arquivados','archive consult':'Abriu a consulta de documentos arquivados','del':'Acionou a opção de enviar para a lixeira','v close':'Fechou a visualização do documento','view':'Abriu a visualização de um documento','open':'Abriu um item ou documento','admin':'Acessou a área administrativa','menu settings':'Abriu as configurações','menu settings data':'Acessou as configurações de dados','ac search':'Pesquisou documentos arquivados','ac clear':'Limpou os filtros da consulta','edit':'Abriu a edição de um documento','showtext':'Visualizou o texto extraído','archive sel':'Solicitou arquivamento dos documentos selecionados','t restore':'Solicitou restauração de documentos da lixeira','t purge':'Solicitou exclusão definitiva de documentos'};
-    return map[key]||('Acessou o recurso: '+(String(raw||'ação não identificada').replace(/[_-]+/g,' ')));
-  }
-  function auditItem(x){
-    const raw=String(x.target||'').trim(),found=auditDocument(raw);if(found)return found.name;
-    if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(raw);
-    if(/^(tab|menu |archive consult|del$|v close$|view$|open$|admin$)/i.test(raw))return auditActionLabel(raw);
-    if(/^[a-f0-9-]{16,}$/i.test(raw))return 'Documento identificado pelo código '+raw;
-    return raw||'Item não identificado no registro';
-  }
-  function auditDescription(x){
-    const op=auditOperation(x),item=auditItem(x),detail=String(x.detail||'').trim();
-    if(/tentativa de login inválida/i.test(x.action||''))return 'Foi registrada uma tentativa de acesso. O sistema recusou as credenciais informadas.';
-    if(/^Ação no sistema$/i.test(x.action||''))return 'O usuário '+auditActionLabel(x.target)+'; o registro confirma a interação, mas não comprova por si só a conclusão de uma operação.';
-    if(/Alterou campo de documento/i.test(x.action||''))return 'Foi alterado o campo “'+(detail||'campo não identificado')+'” do documento '+item+'.';
-    if(/Iniciou leitura de PDFs/i.test(x.action||''))return 'O usuário selecionou arquivo(s) para iniciar a leitura. Este registro indica o início, não a conclusão do processamento.';
-    if(/^Concluiu:/i.test(x.action||''))return 'O sistema registrou a conclusão da operação “'+op+'”'+(item?': '+item:'')+'.';
-    if(/^Falha durante a operação:/i.test(x.action||''))return 'A operação não foi concluída. O motivo registrado foi: '+(detail||'não informado')+'.';
-    if(/Solicitou/i.test(x.action||''))return 'O usuário solicitou a operação “'+op+'”. O registro não confirma que ela tenha sido concluída.';
-    return 'O usuário '+op.charAt(0).toLowerCase()+op.slice(1).replace(/[.]$/,'')+(item?' — '+item:'')+'.'+(detail?' Informação adicional: '+detail+'.':'');
-  }
-  function auditDetailHTML(x,result,desc){
-    const d=new Date(x.at),when=Number.isNaN(d.getTime())?'Data e horário não disponíveis':d.toLocaleString('pt-BR');
-    const found=auditDocument(x.target),doc=found&&found.doc,fields=[];
-    if(doc){const labels={originalName:'Nome original',newName:'Nome no arquivo',person:'Pessoa/empresa',issuer:'Emissor',docNumber:'Número do documento',type:'Tipo',folderName:'Pasta',date:'Data do documento',status:'Situação atual'};for(const k of Object.keys(labels)){const v=doc[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')fields.push([labels[k],String(v)]);}}
-    const esc=v=>escA(String(v??'—'));
-    let html='<div class="ap-audit-detail-content"><p>'+esc(desc)+'</p><dl>';
-    const pairs=[['Responsável',(x.user||'Sistema')+(x.login?' ('+x.login+')':'')],['Data e horário',when],['Operação registrada',auditOperation(x)],['Item / área',auditItem(x)],['Resultado do registro',result]];
-    fields.forEach(v=>pairs.push(v));
-    pairs.push(['Informação adicional registrada',x.detail||'Não há informação adicional registrada.'],['Tipo original',x.type],['Ação original',x.action],['Alvo original',x.target],['Identificador do registro',x.id]);
-    pairs.forEach(v=>{html+='<dt>'+esc(v[0])+'</dt><dd>'+esc(v[1])+'</dd>';});
-    html+='</dl><p class="ap-audit-note">Os dados do documento são exibidos somente quando ainda estão disponíveis no arquivo local. A auditoria não presume alterações ou exclusões que o registro não comprove.</p></div>';return html;
-  }
+  function auditCommand(x){const raw=String(x.command||x.action||'Atividade no sistema');if(AUDIT_LABELS[raw])return AUDIT_LABELS[raw];if(/^Falha durante a operação:|^Concluiu:/i.test(raw))return 'Execução de operação';if(/^Ação no sistema$/i.test(raw))return 'Interação com o sistema';return raw.replace(/[_-]+/g,' ');}
+  function auditOperation(x){return auditCommand(x);}
+  function auditResult(x){const ok=['Concluído','Não concluído','Solicitado','Registrado','Em andamento'];if(ok.includes(String(x.status||'')))return x.status;const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';if(/solicitou/.test(s))return 'Solicitado';if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';return 'Registrado';}
+  function auditDocument(idOrName){const raw=String(idOrName||'').trim();if(!raw)return null;try{const docs=(typeof state!=='undefined'&&state&&Array.isArray(state.docs))?state.docs:[];const found=docs.find(d=>String(d.id)===raw||String(d.originalName||'')===raw||String(d.newName||'')===raw);if(found)return {name:String(found.newName||found.originalName||'Documento sem nome'),doc:found};}catch(e){}return null;}
+  function auditItem(x){if(Array.isArray(x.documentContext)&&x.documentContext.length){const names=x.documentContext.map(d=>d.name||d.newName||d.originalName).filter(Boolean);if(names.length)return names.length===1?names[0]:names.length+' documentos: '+names.slice(0,3).join('; ')+(names.length>3?' e mais '+(names.length-3):'');}const raw=String(x.target||'').trim(),found=auditDocument(raw);if(found)return found.name;if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(raw);if(/^(tab|menu |archive consult|del$|v close$|view$|open$|admin$)/i.test(raw))return auditActionLabel(raw);if(/^[a-f0-9-]{16,}$/i.test(raw))return 'Documento identificado pelo código '+raw;return raw||'Atividade geral do sistema';}
+  function auditActionLabel(raw){const key=String(raw||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');const map={'tab':'Acessou uma seção do sistema','menu archives':'Abriu o menu Arquivos','archive consult':'Abriu a consulta de arquivos','del':'Abriu a opção de enviar para a Lixeira','v close':'Fechou a visualização do documento','view':'Abriu a visualização de um documento','open':'Abriu um documento ou item','admin':'Abriu a área administrativa','menu settings':'Abriu as configurações','menu settings data':'Abriu as configurações de dados','ac search':'Pesquisou documentos arquivados','ac clear':'Limpou os filtros da consulta','edit':'Abriu a edição de um documento','showtext':'Abriu o texto extraído do documento','archive sel':'Solicitou o arquivamento dos documentos selecionados','t restore':'Solicitou a restauração de documentos da Lixeira','t purge':'Solicitou a exclusão definitiva de documentos'};return map[key]||('Acessou o recurso '+String(raw||'não identificado').replace(/[_-]+/g,' '));}
+  function auditPerformed(x){if(x.performed)return String(x.performed);if(Array.isArray(x.documentContext)&&x.documentContext.length)return auditItem(x);if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(x.target);const item=auditItem(x),detail=String(x.detail||'').trim();return item&&detail?item+'. '+detail:item||detail||'O sistema registrou a atividade informada.';}
+  function auditDescription(x){const performed=auditPerformed(x),detail=String(x.detail||'').trim();if(x._group)return 'O usuário realizou '+x._group.length+' ações de navegação em sequência. Todas as ações individuais continuam disponíveis nos detalhes.';if(/tentativa de login inválida/i.test(x.action||''))return 'O acesso não foi autorizado porque as credenciais informadas não foram aceitas.';if(/^Ação no sistema$/i.test(x.action||'')){const a=auditActionLabel(x.target);return 'O usuário '+a.charAt(0).toLowerCase()+a.slice(1)+'. O registro confirma a interação, mas não significa que uma operação tenha sido concluída.';}if(/Alterou campo de documento/i.test(x.action||''))return 'O usuário alterou o campo “'+(detail||'campo não identificado')+'” do documento '+performed+'.';if(/Iniciou leitura de PDFs/i.test(x.action||''))return 'A leitura dos arquivos foi iniciada. Este registro não confirma que o processamento terminou.';if(/^Falha durante a operação:/i.test(x.action||''))return 'O sistema não conseguiu concluir a operação. Motivo: '+(detail||'não informado')+'.';if(/Solicitou/i.test(x.action||''))return 'A operação foi solicitada, mas este registro não confirma sua conclusão.';if(auditResult(x)==='Concluído')return 'O sistema confirmou a conclusão da operação. '+performed+(detail?' — '+detail:'');return 'O sistema registrou a atividade: '+performed+(detail?' — '+detail:'');}
+  function auditDetailHTML(x,result,desc){const d=new Date(x.at),when=Number.isNaN(d.getTime())?'Data e horário não disponíveis':d.toLocaleString('pt-BR'),docs=Array.isArray(x.documentContext)?x.documentContext:[],found=auditDocument(x.target),doc=found&&found.doc,fields=[],labels={originalName:'Nome original',newName:'Nome no arquivo',person:'Pessoa/empresa',issuer:'Emissor',docNumber:'Número do documento',type:'Tipo',folderName:'Pasta',date:'Data do documento',status:'Situação atual'},contexts=docs.length?docs:(doc?[{...doc,name:doc.newName||doc.originalName}]:[]);
+    contexts.forEach((item,index)=>{fields.push(['Documento '+(index+1),item.name||item.newName||item.originalName||'Documento sem nome']);Object.keys(labels).forEach(k=>{const v=item[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')fields.push([labels[k],String(v)]);});});
+    const esc=v=>escA(String(v??'—'));let html='<div class="ap-audit-detail-content"><p>'+esc(desc)+'</p><dl>';const pairs=[['Responsável',(x.user||'Sistema')+(x.login?' ('+x.login+')':'')],['Data e horário',when],['Comando',auditCommand(x)],['O que foi realizado',auditPerformed(x)],['Status do comando',result]];fields.forEach(v=>pairs.push(v));pairs.push(['Informação adicional registrada',x.detail||'Não há informação adicional registrada.'],['Tipo original',x.type],['Ação original',x.action],['Alvo original',x.target],['Identificador do registro',x.id]);pairs.forEach(v=>{html+='<dt>'+esc(v[0])+'</dt><dd>'+esc(v[1])+'</dd>';});
+    if(Array.isArray(x._group))html+='<dt>Ações agrupadas</dt><dd><ul>'+x._group.map(g=>'<li>'+esc(new Date(g.at).toLocaleTimeString('pt-BR')+' — '+auditActionLabel(g.target))+'</li>').join('')+'</ul></dd>';html+='</dl><p class="ap-audit-note">Os dados técnicos originais são preservados. Quando um documento é identificado durante a atividade, seus dados principais ficam associados ao registro para continuar disponíveis mesmo que ele seja removido da lista atual.</p></div>';return html;}
+  function isNavigationAudit(x){if(!/^Ação no sistema$/i.test(x.action||''))return false;const k=String(x.target||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');return new Set(['tab','menu archives','archive consult','admin','menu settings','menu settings data']).has(k);}
+  function groupNavigationRows(rows){const out=[];for(let i=0;i<rows.length;){const first=rows[i];if(!isNavigationAudit(first)){out.push(first);i++;continue;}const group=[first];let j=i+1;while(j<rows.length&&isNavigationAudit(rows[j])&&rows[j].user===first.user){const prev=new Date(group[group.length-1].at).getTime(),next=new Date(rows[j].at).getTime();if(!Number.isFinite(prev)||!Number.isFinite(next)||Math.abs(prev-next)>30000)break;group.push(rows[j]);j++;}if(group.length>1){const areas=[...new Set(group.map(g=>auditActionLabel(g.target)))];out.push({...first,command:'Navegação pelo sistema',performed:areas.join('; '),status:'Registrado',_group:group});}else out.push(first);i=j;}return out;}
   function auditHTML(){
-    const all=A.state.audit.slice().reverse(),q=A.search.toLowerCase();
-    const users=[...new Set(all.map(x=>x.user).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const actions=[...new Set(all.map(x=>x.action).filter(Boolean))].sort((a,b)=>auditOperation({action:a}).localeCompare(auditOperation({action:b}),'pt-BR'));
-    const f=A.auditFilters||(A.auditFilters={from:'',to:'',user:'',action:'',result:''});
-    const L=all.filter(x=>{
-      const date=String(x.at||'').slice(0,10),res=auditResult(x);
-      return (!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.user||x.user===f.user)&&(!f.action||x.action===f.action)&&(!f.result||res===f.result)&&
-        (!q||[x.user,x.login,x.action,auditOperation(x),x.target,x.detail,auditDescription(x),res].join(' ').toLowerCase().includes(q));
-    });
-    const options=(items,selected,labels=false)=>items.map(v=>`<option value="${escA(v)}" ${v===selected?'selected':''}>${escA(labels?auditOperation({action:v}):v)}</option>`).join('');
-    const rows=L.map(x=>{
-      const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR');
-      const result=auditResult(x),cls=result==='Concluído'?'ok':result==='Não concluído'?'bad':'pending';
-      const desc=auditDescription(x);
-      return `<tr><td data-label="Data">${date}</td><td data-label="Hora">${time}</td><td data-label="Usuário">${escA(x.user||'Sistema')}</td><td data-label="Operação"><b>${escA(auditOperation(x))}</b><span class="ap-audit-status ${cls}">${result}</span></td><td data-label="Item">${escA(auditItem(x))}</td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary>${auditDetailHTML(x,result,desc)}</details></td></tr>`;
-    }).join('');
-    return `<div class="ap-card ap-audit-card">
-      <div class="ap-audit-intro"><div><strong>Acompanhe as atividades do Arquivo Digital</strong><p>Os registros são apresentados em linguagem simples. As informações técnicas originais continuam preservadas nos detalhes.</p></div><span class="ap-muted">${L.length} de ${all.length} registro(s)</span></div>
-      <div class="ap-audit-search"><input id="apSearch" placeholder="Pesquisar usuário, documento ou descrição..." value="${escA(A.search)}"><button class="ap-btn ghost" data-auth="export-audit">Exportar registros</button></div>
-      <div class="ap-audit-filters">
-        <label>De<input type="date" id="apAuditFrom" value="${escA(f.from)}"></label>
-        <label>Até<input type="date" id="apAuditTo" value="${escA(f.to)}"></label>
-        <label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>${options(users,f.user)}</select></label>
-        <label>Operação<select id="apFilter"><option value="">Todas as operações</option>${options(actions,f.action,true)}</select></label>
-        <label>Resultado<select id="apAuditResult"><option value="">Todos os resultados</option><option ${f.result==='Concluído'?'selected':''}>Concluído</option><option ${f.result==='Não concluído'?'selected':''}>Não concluído</option><option ${f.result==='Solicitado'?'selected':''}>Solicitado</option><option ${f.result==='Registrado'?'selected':''}>Registrado</option></select></label>
-        <button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button>
-      </div>
-      <div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Operação</th><th>Item</th><th>Detalhes</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="ap-audit-empty">Nenhum registro encontrado para os filtros informados.</td></tr>'}</tbody></table></div>
-      <p class="ap-audit-foot">A auditoria é armazenada no banco local de autenticação e não altera o banco de documentos.</p>
-    </div>`;
+    const all=A.state.audit.slice().reverse(),q=A.search.toLowerCase(),users=[...new Set(all.map(x=>x.user).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),actions=[...new Set(all.map(x=>x.command||x.action).filter(Boolean))].sort((a,b)=>auditCommand({command:a,action:a}).localeCompare(auditCommand({command:b,action:b}),'pt-BR')),f=A.auditFilters||(A.auditFilters={from:'',to:'',user:'',action:'',result:''});
+    const L=all.filter(x=>{const date=String(x.at||'').slice(0,10),res=auditResult(x),command=x.command||x.action;return (!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.user||x.user===f.user)&&(!f.action||command===f.action)&&(!f.result||res===f.result)&&(!q||[x.user,x.login,x.action,x.command,x.performed,auditCommand(x),x.target,x.detail,auditDescription(x),res].join(' ').toLowerCase().includes(q));}),display=groupNavigationRows(L),options=(items,selected)=>items.map(v=>'<option value="'+escA(v)+'" '+(v===selected?'selected':'')+'>'+escA(auditCommand({command:v,action:v}))+'</option>').join('');
+    const rows=display.map(x=>{const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR'),result=auditResult(x),cls=result==='Concluído'?'ok':result==='Não concluído'?'bad':result==='Em andamento'?'running':'pending',desc=auditDescription(x);return '<tr><td data-label="Data">'+date+'</td><td data-label="Hora">'+time+'</td><td data-label="Usuário">'+escA(x.user||'Sistema')+'</td><td data-label="Comando"><b>'+escA(auditCommand(x))+'</b></td><td data-label="O que foi realizado">'+escA(auditPerformed(x))+'</td><td data-label="Status"><span class="ap-audit-status '+cls+'">'+escA(result)+'</span></td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary>'+auditDetailHTML(x,result,desc)+'</details></td></tr>';}).join('');
+    return '<div class="ap-card ap-audit-card"><div class="ap-audit-intro"><div><strong>Atividades do Arquivo Digital</strong><p>Veja quem executou cada comando, o que foi realizado e o resultado. As ações de navegação repetidas em sequência são agrupadas apenas na visualização; nenhum registro é apagado.</p></div><span class="ap-muted">'+display.length+' linhas exibidas · '+L.length+' atividades encontradas</span></div>'+
+      '<div class="ap-audit-search"><input id="apSearch" placeholder="Pesquisar usuário, comando, documento ou atividade..." value="'+escA(A.search)+'"><button class="ap-btn ghost" data-auth="export-audit">Exportar registros</button></div>'+
+      '<div class="ap-audit-filters"><label>De<input type="date" id="apAuditFrom" value="'+escA(f.from)+'"></label><label>Até<input type="date" id="apAuditTo" value="'+escA(f.to)+'"></label><label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>'+options(users,f.user)+'</select></label><label>Comando<select id="apFilter"><option value="">Todos os comandos</option>'+options(actions,f.action)+'</select></label><label>Status<select id="apAuditResult"><option value="">Todos os status</option>'+['Concluído','Não concluído','Solicitado','Em andamento','Registrado'].map(v=>'<option '+(f.result===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button></div>'+
+      '<div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Comando que foi feito</th><th>O que foi realizado</th><th>Status do comando</th><th>Detalhes</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="ap-audit-empty">Nenhuma atividade encontrada para os filtros informados.</td></tr>')+'</tbody></table></div>'+
+      '<p class="ap-audit-foot">Os registros são mantidos no banco local de auditoria. A exportação inclui o histórico completo, inclusive as atividades agrupadas nesta tela.</p></div>';
   }
-  async function panelClick(e){const b=e.target.closest('[data-auth]');if(!b)return;const a=b.dataset.auth,id=b.dataset.id;
+  async function panelClick(e)  async function panelClick(e){const b=e.target.closest('[data-auth]');if(!b)return;const a=b.dataset.auth,id=b.dataset.id;
     if(a==='close'){$a('#arqAuthPanel').hidden=true;return;}if(a==='audit-clear'){A.search='';A.auditFilters={from:'',to:'',user:'',action:'',result:''};drawPanel();return;}if(a==='tab-users'){A.tab='users';drawPanel();return;}if(a==='tab-history'){A.tab='history';drawPanel();return;}if(a==='tab-audit'){A.tab='audit';drawPanel();return;}
     if(a==='new-user'){userForm(null);return;}if(a==='edit-user'){userForm(id);return;}if(a==='cancel-form'){A.editId=null;drawPanel();return;}if(a==='save-user'){await saveUser();return;}
     if(a==='perm-all'||a==='perm-none'||a==='perm-default'){document.querySelectorAll('[data-ap-perm]').forEach(c=>c.checked=a==='perm-all'?true:a==='perm-none'?false:!!DEFAULTS[c.dataset.apPerm]);return;}
