@@ -4438,7 +4438,7 @@ document.addEventListener("paste", e => {
       }
     };
   }
-  function installWrappers(){  function installWrappers(){
+  function installWrappers(){
     wrap('addFiles','importar','Iniciou leitura de PDFs',{target:a=>Array.from(a[0]||[]).map(f=>f.name).join('; '),detail:a=>(a[0]||[]).length+' arquivo(s) selecionado(s)'});
     wrap('archiveIds','arquivar','Renomeou e arquivou documentos',{target:a=>(a[0]||[]).join('; '),detail:a=>(a[0]||[]).length+' documento(s)'});
     wrap('deleteIds','excluir','Enviou documentos para exclusão',{target:a=>(a[0]||[]).join('; '),detail:a=>(a[0]||[]).length+' documento(s)'});
@@ -4518,7 +4518,7 @@ document.addEventListener("paste", e => {
       '<div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Comando que foi feito</th><th>O que foi realizado</th><th>Status do comando</th><th>Detalhes</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="ap-audit-empty">Nenhuma atividade encontrada para os filtros informados.</td></tr>')+'</tbody></table></div>'+
       '<p class="ap-audit-foot">Os registros são mantidos no banco local de auditoria. A exportação inclui o histórico completo, inclusive as atividades agrupadas nesta tela.</p></div>';
   }
-  async function panelClick(e)  async function panelClick(e){const b=e.target.closest('[data-auth]');if(!b)return;const a=b.dataset.auth,id=b.dataset.id;
+  async function panelClick(e){const b=e.target.closest('[data-auth]');if(!b)return;const a=b.dataset.auth,id=b.dataset.id;
     if(a==='close'){$a('#arqAuthPanel').hidden=true;return;}if(a==='audit-clear'){A.search='';A.auditFilters={from:'',to:'',user:'',action:'',result:''};drawPanel();return;}if(a==='tab-users'){A.tab='users';drawPanel();return;}if(a==='tab-history'){A.tab='history';drawPanel();return;}if(a==='tab-audit'){A.tab='audit';drawPanel();return;}
     if(a==='new-user'){userForm(null);return;}if(a==='edit-user'){userForm(id);return;}if(a==='cancel-form'){A.editId=null;drawPanel();return;}if(a==='save-user'){await saveUser();return;}
     if(a==='perm-all'||a==='perm-none'||a==='perm-default'){document.querySelectorAll('[data-ap-perm]').forEach(c=>c.checked=a==='perm-all'?true:a==='perm-none'?false:!!DEFAULTS[c.dataset.apPerm]);return;}
