@@ -483,6 +483,7 @@ footer.foot{margin-top:34px}
 #arqAuthPanel .ap-audit-status{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
 #arqAuthPanel .ap-audit-status.ok{background:#e6f5eb;color:#236b3e}
 #arqAuthPanel .ap-audit-status.bad{background:#fdebea;color:#a52d25}
+#arqAuthPanel .ap-audit-status.partial{background:#fff0df;color:#875019}
 #arqAuthPanel .ap-audit-status.pending{background:#fff3d6;color:#785500}
 #arqAuthPanel .ap-audit-detail summary{cursor:pointer;color:#164b9b;font-weight:700;font-size:12px;white-space:nowrap}
 #arqAuthPanel .ap-audit-detail>div{min-width:220px;max-width:380px;padding:9px 10px;margin-top:7px;background:#f6f8fc;border:1px solid #e2eaf6;border-radius:9px;white-space:normal}
@@ -2014,7 +2015,7 @@ async function ocrBetter(buf, d, curText){
 }
 async function addFiles(list){
   const files = [...list].filter(f => /\.pdf$/i.test(f.name) || f.type === "application/pdf");
-  if(!files.length){ toast("Selecione arquivos PDF."); return; }
+  if(!files.length){ toast("Selecione arquivos PDF."); return false; }
   state.tab = "fila"; state.q = ""; $("#q").value = ""; state.sel.clear();
   const fresh = files.map(f => ({id: uid(), blob: f, originalName: f.name, status: "reading", type: "outro", person: "", issuer: "", date: "", value: null, docNumber: "", text: "", noText: false, addedAt: Date.now()}));
   state.docs.push(...fresh); render();
@@ -2056,6 +2057,7 @@ async function addFiles(list){
   }
   PF.set(fresh.length, fresh.length, ""); PF.finish(`${fresh.length} ${fresh.length === 1 ? "PDF lido" : "PDFs lidos"}.`);
   toast(`${fresh.length} ${fresh.length === 1 ? "PDF lido" : "PDFs lidos"}. Confira os dados e clique em Renomear e arquivar.`);
+  return true;
 }
 /* ---------- pasta no computador (File System Access) ---------- */
 async function ensurePerm(){
@@ -2551,12 +2553,12 @@ function renderDisk(){
 async function archiveIds(ids, opt){
   if(!(opt && opt.review)){
     const held = ids.map(byId).filter(d => d && needsReview(d));
-    if(held.length){ ids = ids.filter(id => !held.some(d => d.id === id)); toast(`${held.length} ${held.length === 1 ? "documento está" : "documentos estão"} em revisão e não ${held.length === 1 ? "foi arquivado" : "foram arquivados"}. Abra a aba Revisão.`); if(!ids.length) return; }
+    if(held.length){ ids = ids.filter(id => !held.some(d => d.id === id)); toast(`${held.length} ${held.length === 1 ? "documento está" : "documentos estão"} em revisão e não ${held.length === 1 ? "foi arquivado" : "foram arquivados"}. Abra a aba Revisão.`); if(!ids.length) return false; }
   }
   const shortN = ids.map(byId).filter(d => d && d.status !== "archived" && wc(folderName(d)) === 1);
   if(shortN.length){
     const ok = await askConfirm("Nome de pasta com uma palavra só", `${shortN.length === 1 ? "Este documento ficaria" : shortN.length + " documentos ficariam"} em pasta com nome curto, como “${folderName(shortN[0])}”. Confira se o nome completo da empresa ou da pessoa está preenchido. Arquivar mesmo assim?`, "Arquivar mesmo assim");
-    if(!ok){ ids = ids.filter(id => !shortN.some(d => d.id === id)); if(!ids.length) return; }
+    if(!ok){ ids = ids.filter(id => !shortN.some(d => d.id === id)); if(!ids.length) return false; }
   }
   const diskOn = !!state.dir.handle, diskOk = diskOn ? await ensurePerm() : false;
   let n = 0, wrote = 0, failed = 0; const aFails = [];
@@ -2579,6 +2581,7 @@ async function archiveIds(ids, opt){
   }
   render();
   await diskFailReport(aFails);
+  return n>0 ? (failed ? {success:false,partial:true} : true) : false;
 }
 async function normalizeArchive(){
   const A = archived().sort((x, y) => (x.archivedAt || 0) - (y.archivedAt || 0));
@@ -2677,28 +2680,30 @@ async function reocrArchive(){
 /* ---------- lixeira: excluir move para cá; só aqui o arquivo é apagado de vez ---------- */
 const trashList = () => state.docs.filter(d => d.status === "trash").sort((a, b) => (b.trashAt || 0) - (a.trashAt || 0));
 async function deleteIds(ids){
-  const list = ids.map(byId).filter(d => d && d.status !== "reading" && d.status !== "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status !== "reading" && d.status !== "trash"); if(!list.length) return false;
   const ok = await askConfirm(list.length === 1 ? "Mover para a lixeira?" : `Mover ${list.length} documentos para a lixeira?`,
     (list.length === 1 ? (list[0].newName || list[0].originalName) + ". " : "") + "O documento sai de todas as listas e vai para a aba Lixeira, de onde você pode restaurá-lo ou excluí-lo definitivamente. O arquivo gravado na pasta do computador só é apagado na exclusão definitiva.", "Mover para a lixeira");
-  if(!ok) return;
+  if(!ok) return false;
   for(const d of list){ d.trashFrom = d.status; d.status = "trash"; d.trashAt = Date.now(); delete d._hay; state.sel.delete(d.id); await dbPut(d); }
   if(state.viewerId && list.some(d => d.id === state.viewerId)) closeViewer();
   toast(list.length === 1 ? "Documento movido para a lixeira." : `${list.length} documentos movidos para a lixeira.`); render();
+  return true;
 }
 async function restoreTrash(ids){
-  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return false;
   for(const d of list){ d.status = d.trashFrom === "archived" ? "archived" : "pending"; delete d.trashFrom; delete d.trashAt; delete d._hay; await dbPut(d); }
   toast(list.length === 1 ? "Documento restaurado." : `${list.length} documentos restaurados.`); render();
+  return true;
 }
 async function purgeIds(ids){
-  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return false;
   const files = list.filter(d => d.diskPath).length, one = list.length === 1;
   const ok = await askConfirm("Excluir definitivamente?", (one ? `“${list[0].newName || list[0].originalName}” será apagado` : `${list.length} documentos serão apagados`) + " do navegador" + (files ? " e da pasta de armazenamento do computador" : "") + ". ESTA AÇÃO É DEFINITIVA E NÃO TEM COMO SER DESFEITA.", "Excluir definitivamente");
-  if(!ok) return;
+  if(!ok) return false;
   let diskOk = true;
   if(files){
     diskOk = !!(state.dir.handle && await ensurePerm());
-    if(!diskOk && !(await askConfirm("Pasta do computador indisponível", `Não foi possível acessar a pasta de armazenamento para apagar ${files === 1 ? "o arquivo gravado nela" : "os arquivos gravados nela"}. Excluir mesmo assim apenas do navegador? ${files === 1 ? "O arquivo continuará" : "Os arquivos continuarão"} na pasta.`, "Excluir só do navegador"))) return;
+    if(!diskOk && !(await askConfirm("Pasta do computador indisponível", `Não foi possível acessar a pasta de armazenamento para apagar ${files === 1 ? "o arquivo gravado nela" : "os arquivos gravados nela"}. Excluir mesmo assim apenas do navegador? ${files === 1 ? "O arquivo continuará" : "Os arquivos continuarão"} na pasta.`, "Excluir só do navegador"))) return false;
   }
   const P = Prog.start("Excluindo definitivamente", {delay: 400}); let i = 0, fail = 0, done = 0;
   try{
@@ -2711,6 +2716,7 @@ async function purgeIds(ids){
     P.finish(`${done} documento${done === 1 ? "" : "s"} excluído${done === 1 ? "" : "s"} definitivamente.`);
   } finally{ P.close(); }
   toast(`${done} documento${done === 1 ? "" : "s"} excluído${done === 1 ? "" : "s"} definitivamente.` + (fail ? ` ${fail} não puderam ser apagados da pasta e continuam na lixeira.` : "")); render();
+  return done>0 ? (fail ? {success:false,partial:true} : true) : false;
 }
 function viewTrash(){
   const L = trashList();
@@ -3551,7 +3557,7 @@ function openEdit(id){
   $("#editdoc").hidden = false; $("#ed-issuer").focus();
 }
 async function saveEdit(){
-  const d = byId(editId); if(!d) return;
+  const d = byId(editId); if(!d) return false;
   const v = k => $("#ed-" + k).value.trim();
   const oldFolder = d.folderName;
   Object.assign(d, {type: $("#ed-type").value, issuer: v("issuer"), person: v("person"), date: v("date"), value: parseBR(v("value")), docNumber: v("docNumber"), folderDate: v("fdate")});
@@ -3569,6 +3575,7 @@ async function saveEdit(){
   await dbPut(d); $("#editdoc").hidden = true; editId = null;
   toast("Documento corrigido."); render();
   if(state.dir.handle && state.dir.perm === "granted") syncDisk();
+  return true;
 }
 /* ---------- eventos ---------- */
 document.addEventListener("click", async e => {
@@ -4427,10 +4434,10 @@ document.addEventListener("paste", e => {
     window[name]=async function(...args){
       if(A.ready&&!can(perm)){blocked();return;}
       let auditRow=null;const target=history&&history.target?history.target(args):'',detail=history&&history.detail?history.detail(args):'';
-      if(A.ready&&A.session){record('processamento',label,target,detail);auditRow=record('auditoria',label,target,detail,{command:label,performed:target||label,status:'Em andamento'});}
+      if(A.ready&&A.session){record('processamento',label,target,detail);auditRow=record('auditoria',label,target,detail,{command:label,performed:label,status:'Em andamento'});}
       try{
         const result=await original.apply(this,args);
-        if(A.ready&&A.session){const failed=result===false||(result&&typeof result==='object'&&result.success===false);const msg=name==='addFiles'?(args[0]||[]).length+' arquivo(s) processado(s)':(failed?'A função informou que a operação não foi concluída.':'Operação concluída com sucesso.');record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,target,msg);finishAudit(auditRow,failed?'Não concluído':'Concluído',msg);}
+        if(A.ready&&A.session){const failed=result===false||(result&&typeof result==='object'&&result.success===false&&!result.partial),partial=!!(result&&typeof result==='object'&&result.partial),confirmed=result===true||(result&&typeof result==='object'&&result.success===true),status=failed?'Não concluído':partial?'Concluído parcialmente':confirmed?'Concluído':'Registrado',msg=failed?'A operação não foi concluída.':partial?'A operação foi realizada parcialmente. Consulte os detalhes para identificar o que ficou pendente.':confirmed?'A operação foi concluída e confirmada.':'A função terminou, mas não retornou uma confirmação suficiente para afirmar que a operação foi concluída.';if(confirmed||partial)record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,target,msg);finishAudit(auditRow,status,msg);}
         return result;
       }catch(err){
         if(A.ready&&A.session){const reason=String(err&&err.message||err||'Erro não informado');record('processamento','Falha durante a operação: '+label,target,reason);finishAudit(auditRow,'Não concluído',reason);}
@@ -4496,11 +4503,11 @@ document.addEventListener("paste", e => {
   };
   function auditCommand(x){const raw=String(x.command||x.action||'Atividade no sistema');if(AUDIT_LABELS[raw])return AUDIT_LABELS[raw];if(/^Falha durante a operação:|^Concluiu:/i.test(raw))return 'Execução de operação';if(/^Ação no sistema$/i.test(raw))return 'Interação com o sistema';return raw.replace(/[_-]+/g,' ');}
   function auditOperation(x){return auditCommand(x);}
-  function auditResult(x){const ok=['Concluído','Não concluído','Solicitado','Registrado','Em andamento'];if(ok.includes(String(x.status||'')))return x.status;const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';if(/solicitou/.test(s))return 'Solicitado';if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';return 'Registrado';}
+  function auditResult(x){const ok=['Concluído','Concluído parcialmente','Não concluído','Solicitado','Registrado','Em andamento'];if(ok.includes(String(x.status||'')))return x.status;const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';if(/solicitou/.test(s))return 'Solicitado';if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';return 'Registrado';}
   function auditDocument(idOrName){const raw=String(idOrName||'').trim();if(!raw)return null;try{const docs=(typeof state!=='undefined'&&state&&Array.isArray(state.docs))?state.docs:[];const found=docs.find(d=>String(d.id)===raw||String(d.originalName||'')===raw||String(d.newName||'')===raw);if(found)return {name:String(found.newName||found.originalName||'Documento sem nome'),doc:found};}catch(e){}return null;}
   function auditItem(x){if(Array.isArray(x.documentContext)&&x.documentContext.length){const names=x.documentContext.map(d=>d.name||d.newName||d.originalName).filter(Boolean);if(names.length)return names.length===1?names[0]:names.length+' documentos: '+names.slice(0,3).join('; ')+(names.length>3?' e mais '+(names.length-3):'');}const raw=String(x.target||'').trim(),found=auditDocument(raw);if(found)return found.name;if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(raw);if(/^(tab|menu |archive consult|del$|v close$|view$|open$|admin$)/i.test(raw))return auditActionLabel(raw);if(/^[a-f0-9-]{16,}$/i.test(raw))return 'Documento identificado pelo código '+raw;return raw||'Atividade geral do sistema';}
   function auditActionLabel(raw){const key=String(raw||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');const map={'tab':'Acessou uma seção do sistema','menu archives':'Abriu o menu Arquivos','archive consult':'Abriu a consulta de arquivos','del':'Abriu a opção de enviar para a Lixeira','v close':'Fechou a visualização do documento','view':'Abriu a visualização de um documento','open':'Abriu um documento ou item','admin':'Abriu a área administrativa','menu settings':'Abriu as configurações','menu settings data':'Abriu as configurações de dados','ac search':'Pesquisou documentos arquivados','ac clear':'Limpou os filtros da consulta','edit':'Abriu a edição de um documento','showtext':'Abriu o texto extraído do documento','archive sel':'Solicitou o arquivamento dos documentos selecionados','t restore':'Solicitou a restauração de documentos da Lixeira','t purge':'Solicitou a exclusão definitiva de documentos'};return map[key]||('Acessou o recurso '+String(raw||'não identificado').replace(/[_-]+/g,' '));}
-  function auditPerformed(x){if(x.performed)return String(x.performed);if(Array.isArray(x.documentContext)&&x.documentContext.length)return auditItem(x);if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(x.target);const item=auditItem(x),detail=String(x.detail||'').trim();return item&&detail?item+'. '+detail:item||detail||'O sistema registrou a atividade informada.';}
+  function auditPerformed(x){const item=auditItem(x),raw=String(x.command||x.action||''),verbs={'Iniciou leitura de PDFs':'Iniciou a leitura de','Renomeou e arquivou documentos':'Renomeou e arquivou','Enviou documentos para exclusão':'Moveu para a Lixeira','Excluiu documentos definitivamente':'Excluiu definitivamente','Restaurou documentos da lixeira':'Restaurou','Salvou edição de documento':'Salvou as alterações em','Salvou revisão de documento':'Salvou a revisão de','Releu documentos':'Fez uma nova leitura de','Executou OCR em documentos arquivados':'Executou leitura automática de','Exportou backup completo':'Criou uma cópia de segurança','Importou backup completo':'Restaurou uma cópia de segurança','Sincronizou pasta local':'Sincronizou a pasta','Executou ferramenta de sincronização':'Executou a sincronização da pasta'};const detail=String(x.detail||'').trim();if(Array.isArray(x.documentContext)&&x.documentContext.length)return (verbs[raw]||auditCommand(x))+': '+item;if(x.performed&&x.performed!==x.target&&x.performed!==raw)return String(x.performed);if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(x.target);if(/^[a-f0-9-]{16,}$/i.test(item))return verbs[raw]||auditCommand(x);return item&&detail?item+'. '+detail:item||detail||'O sistema registrou a atividade informada.';}
   function auditDescription(x){const performed=auditPerformed(x),detail=String(x.detail||'').trim();if(x._group)return 'O usuário realizou '+x._group.length+' ações de navegação em sequência. Todas as ações individuais continuam disponíveis nos detalhes.';if(/tentativa de login inválida/i.test(x.action||''))return 'O acesso não foi autorizado porque as credenciais informadas não foram aceitas.';if(/^Ação no sistema$/i.test(x.action||'')){const a=auditActionLabel(x.target);return 'O usuário '+a.charAt(0).toLowerCase()+a.slice(1)+'. O registro confirma a interação, mas não significa que uma operação tenha sido concluída.';}if(/Alterou campo de documento/i.test(x.action||''))return 'O usuário alterou o campo “'+(detail||'campo não identificado')+'” do documento '+performed+'.';if(/Iniciou leitura de PDFs/i.test(x.action||''))return 'A leitura dos arquivos foi iniciada. Este registro não confirma que o processamento terminou.';if(/^Falha durante a operação:/i.test(x.action||''))return 'O sistema não conseguiu concluir a operação. Motivo: '+(detail||'não informado')+'.';if(/Solicitou/i.test(x.action||''))return 'A operação foi solicitada, mas este registro não confirma sua conclusão.';if(auditResult(x)==='Concluído')return 'O sistema confirmou a conclusão da operação. '+performed+(detail?' — '+detail:'');return 'O sistema registrou a atividade: '+performed+(detail?' — '+detail:'');}
   function auditDetailHTML(x,result,desc){const d=new Date(x.at),when=Number.isNaN(d.getTime())?'Data e horário não disponíveis':d.toLocaleString('pt-BR'),docs=Array.isArray(x.documentContext)?x.documentContext:[],found=auditDocument(x.target),doc=found&&found.doc,fields=[],labels={originalName:'Nome original',newName:'Nome no arquivo',person:'Pessoa/empresa',issuer:'Emissor',docNumber:'Número do documento',type:'Tipo',folderName:'Pasta',date:'Data do documento',status:'Situação atual'},contexts=docs.length?docs:(doc?[{...doc,name:doc.newName||doc.originalName}]:[]);
     contexts.forEach((item,index)=>{fields.push(['Documento '+(index+1),item.name||item.newName||item.originalName||'Documento sem nome']);Object.keys(labels).forEach(k=>{const v=item[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')fields.push([labels[k],String(v)]);});});
@@ -4511,10 +4518,10 @@ document.addEventListener("paste", e => {
   function auditHTML(){
     const all=A.state.audit.slice().reverse(),q=A.search.toLowerCase(),users=[...new Set(all.map(x=>x.user).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),actions=[...new Set(all.map(x=>x.command||x.action).filter(Boolean))].sort((a,b)=>auditCommand({command:a,action:a}).localeCompare(auditCommand({command:b,action:b}),'pt-BR')),f=A.auditFilters||(A.auditFilters={from:'',to:'',user:'',action:'',result:''});
     const L=all.filter(x=>{const date=String(x.at||'').slice(0,10),res=auditResult(x),command=x.command||x.action;return (!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.user||x.user===f.user)&&(!f.action||command===f.action)&&(!f.result||res===f.result)&&(!q||[x.user,x.login,x.action,x.command,x.performed,auditCommand(x),x.target,x.detail,auditDescription(x),res].join(' ').toLowerCase().includes(q));}),display=groupNavigationRows(L),options=(items,selected)=>items.map(v=>'<option value="'+escA(v)+'" '+(v===selected?'selected':'')+'>'+escA(auditCommand({command:v,action:v}))+'</option>').join('');
-    const rows=display.map(x=>{const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR'),result=auditResult(x),cls=result==='Concluído'?'ok':result==='Não concluído'?'bad':result==='Em andamento'?'running':'pending',desc=auditDescription(x);return '<tr><td data-label="Data">'+date+'</td><td data-label="Hora">'+time+'</td><td data-label="Usuário">'+escA(x.user||'Sistema')+'</td><td data-label="Comando"><b>'+escA(auditCommand(x))+'</b></td><td data-label="O que foi realizado">'+escA(auditPerformed(x))+'</td><td data-label="Status"><span class="ap-audit-status '+cls+'">'+escA(result)+'</span></td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary>'+auditDetailHTML(x,result,desc)+'</details></td></tr>';}).join('');
+    const rows=display.map(x=>{const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR'),result=auditResult(x),cls=result==='Concluído'?'ok':result==='Concluído parcialmente'?'partial':result==='Não concluído'?'bad':result==='Em andamento'?'running':'pending',desc=auditDescription(x);return '<tr><td data-label="Data">'+date+'</td><td data-label="Hora">'+time+'</td><td data-label="Usuário">'+escA(x.user||'Sistema')+'</td><td data-label="Comando"><b>'+escA(auditCommand(x))+'</b></td><td data-label="O que foi realizado">'+escA(auditPerformed(x))+'</td><td data-label="Status"><span class="ap-audit-status '+cls+'">'+escA(result)+'</span></td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary>'+auditDetailHTML(x,result,desc)+'</details></td></tr>';}).join('');
     return '<div class="ap-card ap-audit-card"><div class="ap-audit-intro"><div><strong>Atividades do Arquivo Digital</strong><p>Veja quem executou cada comando, o que foi realizado e o resultado. As ações de navegação repetidas em sequência são agrupadas apenas na visualização; nenhum registro é apagado.</p></div><span class="ap-muted">'+display.length+' linhas exibidas · '+L.length+' atividades encontradas</span></div>'+
       '<div class="ap-audit-search"><input id="apSearch" placeholder="Pesquisar usuário, comando, documento ou atividade..." value="'+escA(A.search)+'"><button class="ap-btn ghost" data-auth="export-audit">Exportar registros</button></div>'+
-      '<div class="ap-audit-filters"><label>De<input type="date" id="apAuditFrom" value="'+escA(f.from)+'"></label><label>Até<input type="date" id="apAuditTo" value="'+escA(f.to)+'"></label><label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>'+options(users,f.user)+'</select></label><label>Comando<select id="apFilter"><option value="">Todos os comandos</option>'+options(actions,f.action)+'</select></label><label>Status<select id="apAuditResult"><option value="">Todos os status</option>'+['Concluído','Não concluído','Solicitado','Em andamento','Registrado'].map(v=>'<option '+(f.result===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button></div>'+
+      '<div class="ap-audit-filters"><label>De<input type="date" id="apAuditFrom" value="'+escA(f.from)+'"></label><label>Até<input type="date" id="apAuditTo" value="'+escA(f.to)+'"></label><label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>'+options(users,f.user)+'</select></label><label>Comando<select id="apFilter"><option value="">Todos os comandos</option>'+options(actions,f.action)+'</select></label><label>Status<select id="apAuditResult"><option value="">Todos os status</option>'+['Concluído','Concluído parcialmente','Não concluído','Solicitado','Em andamento','Registrado'].map(v=>'<option '+(f.result===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button></div>'+
       '<div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Comando que foi feito</th><th>O que foi realizado</th><th>Status do comando</th><th>Detalhes</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="ap-audit-empty">Nenhuma atividade encontrada para os filtros informados.</td></tr>')+'</tbody></table></div>'+
       '<p class="ap-audit-foot">Os registros são mantidos no banco local de auditoria. A exportação inclui o histórico completo, inclusive as atividades agrupadas nesta tela.</p></div>';
   }
