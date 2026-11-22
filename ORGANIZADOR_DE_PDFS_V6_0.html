@@ -347,7 +347,8 @@ button.cchip{background:#fff;cursor:pointer;font-family:inherit}button.cchip[ari
 #arqAuthScreen .authbrand strong{display:none !important;}
 
 :root{--b950:#071a47;--b900:#0b2a6f;--b800:#123a96;--b700:#1d4ed8;--b600:#2563eb;--b500:#3b82f6;--b200:#bfdbfe;--b100:#dbeafe;--b50:#eff6ff;--late:#dc2626;--mut:#64748b}
-#arqAuthScreen{position:fixed;inset:0;z-index:10000;min-height:100vh;display:grid;place-items:center;background:radial-gradient(circle at 20% 10%,var(--b600),var(--b950) 70%);padding:20px;overflow:auto;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+#arqAuthScreen{position:fixed;inset:0;z-index:10000;box-sizing:border-box;width:100%;height:100%;min-height:0;display:grid;place-items:center;background:radial-gradient(circle at 20% 10%,var(--b600),var(--b950) 70%);padding:20px;overflow:hidden;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+html.auth-login-open,body.auth-login-open{width:100%;height:100%;min-height:0!important;overflow:hidden!important;overscroll-behavior:none}
 #arqAuthScreen[hidden]{display:none}
 #arqAuthScreen .authbox{background:#fff;color:#0f1d3d;border-radius:22px;padding:34px;width:min(420px,100%);box-shadow:0 30px 80px rgba(0,0,0,.4)}
 #arqAuthScreen .authbrand{display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#4049de,#1b1e64);border-radius:14px;padding:16px;margin-bottom:12px;min-height:78px}
@@ -421,6 +422,7 @@ body{min-height:100vh}
 .appbar .tab[aria-selected="true"]{background:linear-gradient(135deg,#2563eb,#1d4ed8);border-color:rgba(255,255,255,.12);color:#fff;font-weight:700;box-shadow:0 5px 16px rgba(0,0,0,.14)}
 .appbar .count{margin-left:auto;min-width:22px;padding:2px 7px;background:rgba(255,255,255,.15);color:#fff;border-radius:99px;font-size:11px}
 .side-extra{display:flex;flex-direction:column;gap:5px;margin-top:4px;padding-top:13px;border-top:1px solid rgba(255,255,255,.14)}
+.appbar .side-extra{order:6}
 .side-label{padding:0 10px 5px;color:#91abd3;font-size:10px;font-weight:800;letter-spacing:.12em}
 .appbar .side-action{width:100%;min-height:42px;display:flex;align-items:center;gap:11px;padding:9px 11px;border:1px solid transparent;border-radius:10px;background:transparent;color:#c5d3ec;text-align:left;font-size:13px;font-weight:600;cursor:pointer}
 .side-emoji{width:23px;flex:0 0 23px;text-align:center;font-size:17px}
@@ -483,6 +485,7 @@ footer.foot{margin-top:34px}
 #arqAuthPanel .ap-audit-status{display:inline-block;margin-top:5px;padding:3px 7px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
 #arqAuthPanel .ap-audit-status.ok{background:#e6f5eb;color:#236b3e}
 #arqAuthPanel .ap-audit-status.bad{background:#fdebea;color:#a52d25}
+#arqAuthPanel .ap-audit-status.partial{background:#fff0df;color:#875019}
 #arqAuthPanel .ap-audit-status.pending{background:#fff3d6;color:#785500}
 #arqAuthPanel .ap-audit-detail summary{cursor:pointer;color:#164b9b;font-weight:700;font-size:12px;white-space:nowrap}
 #arqAuthPanel .ap-audit-detail>div{min-width:220px;max-width:380px;padding:9px 10px;margin-top:7px;background:#f6f8fc;border:1px solid #e2eaf6;border-radius:9px;white-space:normal}
@@ -494,6 +497,29 @@ footer.foot{margin-top:34px}
 #arqAuthPanel .ap-audit-empty{text-align:center;padding:28px!important;color:#64748b}
 @media(max-width:900px){#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(3,minmax(120px,1fr))}}
 @media(max-width:620px){#arqAuthPanel .ap-audit-intro{display:block}#arqAuthPanel .ap-audit-search{align-items:stretch;flex-direction:column}#arqAuthPanel .ap-audit-search input{width:100%}#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}#arqAuthPanel .ap-audit-table{max-height:62vh}}
+.ap-audit-detail-content{padding:10px 12px;min-width:260px}.ap-audit-detail-content>p{margin:0 0 10px;line-height:1.5}.ap-audit-detail-content dl{display:grid;grid-template-columns:minmax(130px,190px) minmax(160px,1fr);gap:6px 12px;margin:0}.ap-audit-detail-content dt{font-weight:650;color:var(--muted)}.ap-audit-detail-content dd{margin:0;overflow-wrap:anywhere}.ap-audit-note{font-size:12px;color:var(--muted);margin-top:12px!important}@media(max-width:650px){.ap-audit-detail-content dl{grid-template-columns:1fr;gap:2px}.ap-audit-detail-content dd{margin-bottom:7px}}
+/* Auditoria: tabela completa, legível e responsiva */
+#arqAuthPanel .ap-audit-table{max-height:62vh;overflow:auto}
+#arqAuthPanel .ap-audit-table table{min-width:1160px;width:100%;border-collapse:separate;border-spacing:0}
+#arqAuthPanel .ap-audit-table th{position:sticky;top:0;z-index:2;background:#f2f6fc;color:#29436c;white-space:nowrap}
+#arqAuthPanel .ap-audit-table td{vertical-align:top;line-height:1.45}
+#arqAuthPanel .ap-audit-table td:nth-child(4){min-width:190px}
+#arqAuthPanel .ap-audit-table td:nth-child(5){min-width:230px;white-space:normal;overflow-wrap:anywhere}
+#arqAuthPanel .ap-audit-table td:nth-child(7){min-width:105px}
+#arqAuthPanel .ap-audit-status{display:inline-block;padding:4px 8px;border-radius:99px;font-size:11px;font-weight:700;white-space:nowrap}
+#arqAuthPanel .ap-audit-status.ok{background:#e6f5eb;color:#236b3e}
+#arqAuthPanel .ap-audit-status.bad{background:#fdebea;color:#a52d25}
+#arqAuthPanel .ap-audit-status.pending{background:#fff3d6;color:#785500}
+#arqAuthPanel .ap-audit-status.running{background:#e6efff;color:#164b9b}
+#arqAuthPanel .ap-audit-detail summary{cursor:pointer;color:#164b9b;font-weight:700;font-size:12px;white-space:nowrap}
+#arqAuthPanel .ap-audit-detail-content{padding:10px 12px;min-width:260px;max-width:520px;white-space:normal}
+#arqAuthPanel .ap-audit-detail-content>p{margin:0 0 10px;line-height:1.5}
+#arqAuthPanel .ap-audit-detail-content dl{display:grid;grid-template-columns:minmax(130px,190px) minmax(160px,1fr);gap:6px 12px;margin:0}
+#arqAuthPanel .ap-audit-detail-content dt{font-weight:650;color:var(--muted)}
+#arqAuthPanel .ap-audit-detail-content dd{margin:0;overflow-wrap:anywhere}
+#arqAuthPanel .ap-audit-note{font-size:12px;color:var(--muted);margin-top:12px!important}
+#arqAuthPanel .ap-audit-intro p{max-width:760px;line-height:1.5}
+@media(max-width:650px){#arqAuthPanel .ap-audit-detail-content dl{grid-template-columns:1fr;gap:2px}#arqAuthPanel .ap-audit-detail-content dd{margin-bottom:7px}#arqAuthPanel .ap-audit-filters{grid-template-columns:repeat(2,minmax(0,1fr))}}
 </style>
 </head>
 <body>
@@ -513,17 +539,16 @@ footer.foot{margin-top:34px}
     <button class="tab" role="tab" data-act="tab" data-v="aprendizado" id="tab-aprendizado">Aprendizado<span class="count" id="c-kb">0</span></button>
     <button class="tab" role="tab" data-act="tab" data-v="lixeira" id="tab-lixeira">Lixeira<span class="count" id="c-lixo">0</span></button>
   </div>
+  <div class="search">
+    <input id="q" type="search" placeholder="Buscar por nome, empresa, data, valor, número…" aria-label="Buscar em todos os documentos arquivados" autocomplete="off">
+    <button id="qclear" type="button" aria-label="Limpar busca" hidden>✕</button>
+  </div>
   <div class="side-extra">
     <div class="side-label">CONFIGURAÇÕES</div>
     <button class="side-action" type="button" data-act="menu-settings"><span class="side-emoji">⚙️</span><span>Configurações</span><span class="side-chevron">⌄</span></button>
     <div class="settings-submenu" id="settingsSubmenu" hidden>
       <button class="side-action sub-action" type="button" data-act="menu-settings-data"><span class="side-emoji">💾</span><span>Dados do sistema</span></button>
     </div>
-    <button class="side-action" type="button" data-act="ai"><span class="side-emoji">✨</span><span>Leitura com IA</span></button>
-  </div>
-  <div class="search">
-    <input id="q" type="search" placeholder="Buscar por nome, empresa, data, valor, número…" aria-label="Buscar em todos os documentos arquivados" autocomplete="off">
-    <button id="qclear" type="button" aria-label="Limpar busca" hidden>✕</button>
   </div>
 </div></div>
 <div class="wrap">
@@ -1538,7 +1563,7 @@ function fillCnpj(d){
   if(!iss) iss = cnpjNear(lines, d.issuer);
   if(!per) per = cnpjNear(lines, d.person);
   d.nfeModel = key ? key.slice(20, 22) : ""; d.keyNumber = key ? key.slice(25, 34).replace(/^0+/, "") : "";
-  d.issuerCnpj = iss || d.aiIc || ""; d.personCnpj = per || d.aiPc || ""; d.issuerCnpjFor = nk(d.issuer); d.personCnpjFor = nk(d.person);
+  d.issuerCnpj = iss || ""; d.personCnpj = per || ""; d.issuerCnpjFor = nk(d.issuer); d.personCnpjFor = nk(d.person);
 }
 const cnpjOf = (d, p) => (d[p + "Cnpj"] && d[p + "CnpjFor"] === nk(d[p])) ? d[p + "Cnpj"] : "";
 
@@ -1655,7 +1680,6 @@ function confidence(d){
     const nd = String(d.docNumber).replace(/\D/g, ""); t += 10;
     if(has){ if((nd && dig.includes(nd)) || txt.includes(nk(d.docNumber))) t += 5; else { t -= 2; bad("docNumber", "nº não localizado no texto do documento"); } } else t += 2;
   }
-  if(d.ai){ if(d.ai.vOk === false){ t -= 10; bad("value", "valor lido só pela IA, sem confirmação: confira no PDF"); } if(d.ai.nOk === false){ t -= 4; bad("docNumber", "nº lido só pela IA, confira no PDF"); } }
   let note = "";
   if(d.noText){ t = Math.min(t, 40); note = "sem texto legível: dados preenchidos à mão, sem validação"; }
   else if(d.ocr){ t -= 8; note = "documento lido por OCR"; }
@@ -1753,7 +1777,7 @@ function uniqueName(d){
 
 /* ---------- ações principais ---------- */
 /* =====================================================================
-   CHAVE DE ACESSO (validação matemática) + LEITURA COM IA (opcional)
+   CHAVE DE ACESSO (validação matemática)
    ===================================================================== */
 const FK_UF = new Set([11,12,13,14,15,16,17,21,22,23,24,25,26,27,28,29,31,32,33,35,41,42,43,50,51,52,53]);
 const FK_MD = new Set(["55", "57", "58", "65", "67"]);
@@ -1812,162 +1836,7 @@ function fkDates(text, y, m){
   return [...c.entries()].sort((a, b) => b[1] - a[1]).map(x => x[0]);
 }
 
-/* ---------- leitura com IA externa (opcional, só com a chave informada pelo usuário) ---------- */
-const AI_K = "arq-ai-v1", AI_DEF = {on: false, key: "", model: "claude-sonnet-5-5", mode: "baixa", dual: false, sent: 0};
-const AI = (() => { try{ return Object.assign({}, AI_DEF, JSON.parse(localStorage.getItem(AI_K) || "{}")); }catch(e){ return Object.assign({}, AI_DEF); } })();
-const aiSave = () => { try{ localStorage.setItem(AI_K, JSON.stringify(AI)); }catch(e){} };
-const aiReady = () => !!(AI.on && AI.key && AI.key.length > 20);
-const aiDg = s => String(s == null ? "" : s).replace(/\D/g, "");
-function aiSystem(){
-  return `Você lê documentos fiscais e financeiros brasileiros a partir de imagens e responde SOMENTE com um JSON válido, sem texto antes ou depois.
-Campos:
-- tipo: um destes códigos: ${Object.entries(TYPES).map(([k, v]) => `${k} (${v})`).join(", ")}.
-- emissor: razão social completa de quem emitiu o documento (nota fiscal, CT-e, recibo, fatura) ou de quem recebe o dinheiro (boleto: beneficiário; comprovante de pagamento ou de transferência: quem recebeu). Escreva como impresso, sem endereço e sem CNPJ.
-- emissor_cnpj: só dígitos, ou null.
-- pessoa: razão social completa de quem paga ou recebe o documento (destinatário, tomador, pagador, cliente). Sem endereço.
-- pessoa_cnpj: só dígitos, ou null.
-- data: AAAA-MM-DD. Nota fiscal, CT-e e recibo: data de emissão. Boleto: vencimento. Comprovante: data do pagamento ou da transferência.
-- valor: número com ponto decimal (valor total da nota, do serviço, do boleto ou do pagamento).
-- numero: número do documento (da nota, do CT-e ou do boleto), sem zeros à esquerda.
-- chave_acesso: os 44 dígitos da chave de acesso, se o documento tiver; senão null.
-- legivel: true se o documento está legível, senão false.
-Regras: se não conseguir ler um campo com certeza, use null. Nunca invente nem complete dados que não estejam visíveis. Copie os dígitos com atenção, um a um.`;
-}
-async function aiCall(content, system, maxTok){
-  const r = await fetch("https://api.anthropic.com/v1/messages", {method: "POST", headers: {"content-type": "application/json", "x-api-key": AI.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true"},
-    body: JSON.stringify({model: AI.model, max_tokens: maxTok || 900, system: system || aiSystem(), messages: [{role: "user", content}]})});
-  if(!r.ok){ let m = ""; try{ const j = await r.json(); m = (j.error && j.error.message) || ""; }catch(e){} throw new Error(`IA respondeu ${r.status}${m ? ": " + m : ""}`); }
-  const j = await r.json(); return (j.content || []).map(b => b.text || "").join("");
-}
-async function aiImages(buf, simple){
-  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buf)}).promise, out = [], n = Math.min(pdf.numPages, 2), L = 1568;
-  const jpg = cv => cv.toDataURL("image/jpeg", 0.86).split(",")[1];
-  for(let p = 1; p <= n; p++){
-    const page = await pdf.getPage(p), base = page.getViewport({scale: 1}), portrait = base.height > base.width * 1.15;
-    const sc = (portrait ? L : L) / base.width, vp = page.getViewport({scale: sc});
-    const c = document.createElement("canvas"); c.width = Math.ceil(vp.width); c.height = Math.ceil(vp.height);
-    const g = c.getContext("2d"); g.fillStyle = "#fff"; g.fillRect(0, 0, c.width, c.height);
-    await page.render({canvasContext: g, viewport: vp}).promise;
-    const k = Math.min(1, L / Math.max(c.width, c.height)), f = document.createElement("canvas"); f.width = Math.round(c.width * k); f.height = Math.round(c.height * k);
-    f.getContext("2d").drawImage(c, 0, 0, f.width, f.height); out.push(jpg(f));
-    if(p === 1 && portrait && !simple){ const h = Math.round(c.height * 0.62), t = document.createElement("canvas"); t.width = c.width; t.height = h; t.getContext("2d").drawImage(c, 0, 0, c.width, h, 0, 0, c.width, h); out.push(jpg(t)); }
-  }
-  return out;
-}
-function aiParse(txt){ const m = String(txt || "").match(/\{[\s\S]*\}/); if(!m) return null; try{ return JSON.parse(m[0]); }catch(e){ return null; } }
-function aiAmountsIn(t){
-  const s = new Set();
-  for(const m of String(t || "").matchAll(/(?<![\d.,])(\d{1,3}(?:[ .,]\d{3})*|\d+)[.,\s](\d{2})(?!\d)/g)){ const v = +(aiDg(m[1]) + "." + m[2]); if(v > 0) s.add(v.toFixed(2)); }
-  return s;
-}
-const aiName = s => { s = String(s || "").replace(/[|_\[\]{}<>~=“”"]/g, " ").replace(/\s+/g, " ").trim().replace(/[\-–,;:. ]+$/, ""); return s.length >= 3 && s.length <= 100 && /[A-Za-zÀ-ÿ]{2}/.test(s) ? s : ""; };
-function aiMerge(d, a){
-  const txt = String(d.text || ""), weak = !!(d.ocr || d.noText || !txt || textQuality(txt).bad);
-  const k0 = fkBest(txt); let key = k0 ? k0.key : "";
-  const kd = aiDg(a.chave_acesso);
-  if(!key && kd.length >= 42 && kd.length <= 46){ const x = fkFix(kd, fkHints(txt)); if(x) key = x.key; }
-  const I = key ? fkInfo(key) : null, ai = {at: Date.now(), model: AI.model, key: !!key, vOk: null, nOk: null};
-  const T = a.tipo && TYPES[a.tipo] ? a.tipo : "";
-  if(I && (d.type === "outro" || d.type === "nota" || d.type === "cte")) d.type = I.model === "57" ? "cte" : "nota";
-  else if(T && T !== "outro" && (d.type === "outro" || weak)) d.type = T;
-  const iss = aiName(a.emissor), per = aiName(a.pessoa);
-  if(iss) d.issuer = polishName(iss);
-  if(per) d.person = polishName(per);
-  const okId = v => v.length === 14 ? cnpjOk(v) : v.length === 11 ? cpfOk(v) : false;
-  let ic = aiDg(a.emissor_cnpj), pc = aiDg(a.pessoa_cnpj);
-  if(I){ ic = I.cnpj; if(pc === I.cnpj) pc = ""; } else if(!okId(ic)) ic = "";
-  if(!okId(pc)) pc = "";
-  d.aiIc = ic; d.aiPc = pc;
-  const dt = /^\d{4}-\d{2}-\d{2}$/.test(String(a.data || "")) ? a.data : "", Y = +dt.slice(0, 4);
-  if(dt && Y >= 2000 && Y <= new Date().getFullYear() + 1 && validISO(dt.slice(8), dt.slice(5, 7), Y)){
-    const okKey = !I || (Y === I.year && +dt.slice(5, 7) === I.month);
-    if(okKey && (weak || !d.date)) d.date = dt;
-  }
-  if(I && d.date && !(+d.date.slice(0, 4) === I.year && +d.date.slice(5, 7) === I.month)){ const c = fkDates(txt, I.year, I.month); d.date = c[0] || ""; }
-  const v = Math.round(Number(a.valor) * 100) / 100;
-  if(v > 0 && v < 1e9){
-    const A = aiAmountsIn(txt), tag = v.toFixed(2);
-    ai.vOk = A.has(tag) || (d.value != null && Math.abs(d.value - v) < 0.005) || !!a.__dualOk;
-    if(weak || d.value == null || ai.vOk) d.value = v;
-  }
-  if(I){ d.docNumber = I.number; ai.nOk = true; }
-  else {
-    const nn = aiDg(a.numero).replace(/^0+/, "");
-    if(nn && nn.length <= 12 && (weak || !d.docNumber)){ d.docNumber = nn; ai.nOk = aiDg(txt).includes(nn); }
-  }
-  d.ai = ai; d.rawIssuer = d.rawIssuer || d.issuer; d.rawPerson = d.rawPerson || d.person; delete d._hay;
-  return true;
-}
-async function aiEnhance(d, buf, force){
-  if(!aiReady() || typeof pdfjsLib === "undefined") return false;
-  if(!force && AI.mode === "baixa"){
-    let lvl = "baixa"; try{ lvl = d.noText ? "baixa" : confidence(d).level; }catch(e){}
-    if(!(d.ocr || d.noText || textQuality(d.text || "").bad || lvl !== "alta")) return false;
-  }
-  d.aiError = ""; d.ocrMsg = "Lendo com IA…"; render();
-  try{
-    const ask = async simple => aiParse(await aiCall([...(await aiImages(buf, simple)).map(b => ({type: "image", source: {type: "base64", media_type: "image/jpeg", data: b}})), {type: "text", text: "Extraia os dados deste documento e responda só com o JSON."}]));
-    const a = await ask(false); if(!a) throw new Error("resposta da IA fora do formato"); AI.sent++;
-    if(AI.dual){ d.ocrMsg = "Conferindo com segunda leitura…"; render(); const b = await ask(true); AI.sent++;
-      if(b && Number(b.valor) === Number(a.valor)) a.__dualOk = true; if(b && aiDg(b.numero) === aiDg(a.numero)) a.__dualNum = true; }
-    aiSave();
-    if(a.legivel === false && !a.valor && !a.emissor){ d.aiError = "A IA não conseguiu ler este documento."; }
-    else aiMerge(d, a);
-    if(d.ai && a.__dualNum && d.ai.nOk === false) d.ai.nOk = true;
-  }catch(e){ d.aiError = String((e && e.message) || e); toast("Leitura com IA: " + d.aiError); }
-  d.ocrMsg = ""; return true;
-}
-async function aiRefresh(d){ polishDoc(d); applyCanon(d); applyKB(d); d.folderName = d.status === "archived" ? canonFolder(folderName(d)) : d.folderName; }
-async function aiReadDoc(id){
-  const d = byId(id); if(!d || !d.blob) return;
-  if(!aiReady()){ aiOpen(); return; }
-  const buf = await d.blob.arrayBuffer(), was = d.status === "archived";
-  if(!await aiEnhance(d, buf, true)) return;
-  if(!d.aiError){ await aiRefresh(d); if(was){ if(d.diskPath){ try{ await removeFromDisk(d); }catch(e){} d.diskPath = null; } d.newName = uniqueName(d); } toast("Documento lido com IA. Confira os dados."); }
-  await dbPut(d); render();
-}
-async function aiArchive(){
-  if(!aiReady()){ aiOpen(); return; }
-  const list = archived().filter(d => d.blob && (d.ocr || d.noText || textQuality(d.text || "").bad || (confidence(d).level !== "alta")) && !d.ai);
-  if(!list.length){ toast("Nenhum documento arquivado precisa de leitura com IA."); return; }
-  if(!(await askConfirm("Reler arquivados com IA", `${list.length} ${list.length === 1 ? "documento arquivado será enviado" : "documentos arquivados serão enviados"} à IA externa (${AI.model}) para nova leitura. Cada um usa de 1 a ${AI.dual ? 4 : 2} chamadas. Nomes e pastas podem mudar.`, "Enviar e reler"))) return;
-  let n = 0, i = 0;
-  for(const d of list){ i++; toast(`Lendo com IA… ${i} de ${list.length}`); const was = d.diskPath;
-    if(!await aiEnhance(d, await d.blob.arrayBuffer(), true) || d.aiError) continue;
-    await aiRefresh(d); if(was){ try{ await removeFromDisk(d); }catch(e){} d.diskPath = null; }
-    d.newName = uniqueName(d); await dbPut(d); n++; }
-  n += await normalizeArchive(); state.path = []; toast(`${n} ${n === 1 ? "documento atualizado" : "documentos atualizados"} com a leitura por IA.`); render();
-}
-function aiOpen(){
-  if(!$("#aiOv")){
-    const st = document.createElement("style"); st.textContent = "#aiBtn{position:fixed;left:424px;bottom:16px;z-index:45;border:1px solid #b5651d;background:#fff;color:#b5651d;border-radius:999px;padding:9px 14px;font:600 13px inherit;font-family:inherit;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.15)}#aiOv .modal{max-width:560px;max-height:92vh;overflow:auto}#aiOv label.f{display:flex;flex-direction:column;gap:4px;margin:10px 0;font-size:13px}#aiOv input[type=text],#aiOv input[type=password],#aiOv select{padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}#aiOv .warn{background:var(--warn-soft);color:var(--warn-ink);border-radius:8px;padding:9px 11px;font-size:13px;margin:8px 0}";
-    document.head.appendChild(st);
-    const ov = document.createElement("div"); ov.className = "overlay"; ov.id = "aiOv"; ov.hidden = true; ov.innerHTML = '<div class="modal" role="dialog" aria-label="Leitura com IA"></div>'; document.body.appendChild(ov);
-    ov.addEventListener("mousedown", e => { if(e.target === ov) ov.hidden = true; });
-    ov.addEventListener("click", async e => {
-      const b = e.target.closest("[data-ai]"); if(!b) return; const a = b.dataset.ai;
-      if(a === "close"){ ov.hidden = true; return; }
-      if(a === "save" || a === "test"){
-        AI.on = $("#ai-on").checked; AI.key = $("#ai-key").value.trim(); AI.model = $("#ai-model").value.trim() || AI_DEF.model; AI.mode = $("#ai-mode").value; AI.dual = $("#ai-dual").checked; aiSave();
-        if(a === "save"){ ov.hidden = true; toast(aiReady() ? "Leitura com IA ligada." : "Leitura com IA desligada."); render(); return; }
-        const r = $("#ai-res"); r.textContent = "Testando…";
-        try{ const t = await aiCall([{type: "text", text: "Responda apenas: ok"}], "Responda de forma curta.", 20); r.textContent = "Conexão funcionando: " + t.trim().slice(0, 40); }catch(err){ r.textContent = "Falhou: " + err.message; }
-      }
-    });
-  }
-  const m = $("#aiOv .modal");
-  m.innerHTML = `<h2>Leitura com IA</h2>
-    <div class="warn"><b>Atenção:</b> quando ligada, as <b>imagens das páginas</b> dos documentos lidos são enviadas pela internet ao serviço da Anthropic (API do Claude) usando a sua chave. Os documentos contêm CNPJs, valores e nomes. Use só se a empresa permitir. Sem a chave, nada é enviado.</div>
-    <label class="chk"><input type="checkbox" id="ai-on" ${AI.on ? "checked" : ""}> Ligar a leitura com IA</label>
-    <label class="f">Chave da API (começa com sk-ant-)<input type="password" id="ai-key" value="${esc(AI.key)}" autocomplete="off"><span class="muted">Fica guardada só neste navegador. Qualquer pessoa com acesso a este computador e navegador poderia usá-la.</span></label>
-    <label class="f">Modelo<input type="text" id="ai-model" value="${esc(AI.model)}"></label>
-    <label class="f">Quando usar<select id="ai-mode"><option value="baixa" ${AI.mode === "baixa" ? "selected" : ""}>Só quando a leitura local não for de alta confiança (recomendado)</option><option value="sempre" ${AI.mode === "sempre" ? "selected" : ""}>Em todos os documentos</option></select></label>
-    <label class="chk"><input type="checkbox" id="ai-dual" ${AI.dual ? "checked" : ""}> Conferência dupla: lê duas vezes e só confirma valor e número se coincidirem (custa o dobro)</label>
-    <p class="muted" style="font-size:12.5px">Cada documento usa 1 chamada (2 com conferência dupla). Documentos enviados até agora: <b>${AI.sent}</b>. Os dados lidos passam por validação: chave de acesso (dígito verificador), CNPJ, data e número. Valor sem confirmação fica em revisão.</p>
-    <div id="ai-res" class="muted" style="min-height:20px;font-size:13px"></div>
-    <div class="row"><button class="btn" data-ai="test" type="button">Testar conexão</button><button class="btn" data-ai="close" type="button">Fechar</button><button class="btn primary" data-ai="save" type="button">Salvar</button></div>`;
-  $("#aiOv").hidden = false;
-}
+try{ localStorage.removeItem("arq-ai-v1"); }catch(e){}
 
 /* qualidade do texto embutido no PDF: scans com OCR antigo trazem uma camada de texto cheia de lixo */
 function textQuality(t){
@@ -1991,7 +1860,7 @@ async function ocrBetter(buf, d, curText){
 }
 async function addFiles(list){
   const files = [...list].filter(f => /\.pdf$/i.test(f.name) || f.type === "application/pdf");
-  if(!files.length){ toast("Selecione arquivos PDF."); return; }
+  if(!files.length){ toast("Selecione arquivos PDF."); return false; }
   state.tab = "fila"; state.q = ""; $("#q").value = ""; state.sel.clear();
   const fresh = files.map(f => ({id: uid(), blob: f, originalName: f.name, status: "reading", type: "outro", person: "", issuer: "", date: "", value: null, docNumber: "", text: "", noText: false, addedAt: Date.now()}));
   state.docs.push(...fresh); render();
@@ -2024,8 +1893,7 @@ async function addFiles(list){
           }
         }
       }
-      if(!d.noText){ Object.assign(d, analyzeDoc(d.text, d.ocr, hdr)); await aiEnhance(d, buf); applyTpl(d, d.text); applyCBoleto(d); polishDoc(d); applyCanon(d); d.rawIssuer = d.issuer; d.rawPerson = d.person; applyKB(d); }
-      else if(aiReady()){ await aiEnhance(d, buf, true); if(d.ai){ polishDoc(d); applyCanon(d); applyKB(d); } }
+      if(!d.noText){ Object.assign(d, analyzeDoc(d.text, d.ocr, hdr)); applyTpl(d, d.text); applyCBoleto(d); polishDoc(d); applyCanon(d); d.rawIssuer = d.issuer; d.rawPerson = d.person; applyKB(d); }
     }catch(e){ d.noText = true; }
     d.status = "pending";
     if(state.opts.batchDate){ d.dateOrig = d.date || ""; d.date = state.opts.batchDate; }
@@ -2033,6 +1901,7 @@ async function addFiles(list){
   }
   PF.set(fresh.length, fresh.length, ""); PF.finish(`${fresh.length} ${fresh.length === 1 ? "PDF lido" : "PDFs lidos"}.`);
   toast(`${fresh.length} ${fresh.length === 1 ? "PDF lido" : "PDFs lidos"}. Confira os dados e clique em Renomear e arquivar.`);
+  return true;
 }
 /* ---------- pasta no computador (File System Access) ---------- */
 async function ensurePerm(){
@@ -2528,12 +2397,12 @@ function renderDisk(){
 async function archiveIds(ids, opt){
   if(!(opt && opt.review)){
     const held = ids.map(byId).filter(d => d && needsReview(d));
-    if(held.length){ ids = ids.filter(id => !held.some(d => d.id === id)); toast(`${held.length} ${held.length === 1 ? "documento está" : "documentos estão"} em revisão e não ${held.length === 1 ? "foi arquivado" : "foram arquivados"}. Abra a aba Revisão.`); if(!ids.length) return; }
+    if(held.length){ ids = ids.filter(id => !held.some(d => d.id === id)); toast(`${held.length} ${held.length === 1 ? "documento está" : "documentos estão"} em revisão e não ${held.length === 1 ? "foi arquivado" : "foram arquivados"}. Abra a aba Revisão.`); if(!ids.length) return false; }
   }
   const shortN = ids.map(byId).filter(d => d && d.status !== "archived" && wc(folderName(d)) === 1);
   if(shortN.length){
     const ok = await askConfirm("Nome de pasta com uma palavra só", `${shortN.length === 1 ? "Este documento ficaria" : shortN.length + " documentos ficariam"} em pasta com nome curto, como “${folderName(shortN[0])}”. Confira se o nome completo da empresa ou da pessoa está preenchido. Arquivar mesmo assim?`, "Arquivar mesmo assim");
-    if(!ok){ ids = ids.filter(id => !shortN.some(d => d.id === id)); if(!ids.length) return; }
+    if(!ok){ ids = ids.filter(id => !shortN.some(d => d.id === id)); if(!ids.length) return false; }
   }
   const diskOn = !!state.dir.handle, diskOk = diskOn ? await ensurePerm() : false;
   let n = 0, wrote = 0, failed = 0; const aFails = [];
@@ -2556,6 +2425,7 @@ async function archiveIds(ids, opt){
   }
   render();
   await diskFailReport(aFails);
+  return n>0 ? (failed ? {success:false,partial:true} : true) : false;
 }
 async function normalizeArchive(){
   const A = archived().sort((x, y) => (x.archivedAt || 0) - (y.archivedAt || 0));
@@ -2654,28 +2524,30 @@ async function reocrArchive(){
 /* ---------- lixeira: excluir move para cá; só aqui o arquivo é apagado de vez ---------- */
 const trashList = () => state.docs.filter(d => d.status === "trash").sort((a, b) => (b.trashAt || 0) - (a.trashAt || 0));
 async function deleteIds(ids){
-  const list = ids.map(byId).filter(d => d && d.status !== "reading" && d.status !== "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status !== "reading" && d.status !== "trash"); if(!list.length) return false;
   const ok = await askConfirm(list.length === 1 ? "Mover para a lixeira?" : `Mover ${list.length} documentos para a lixeira?`,
     (list.length === 1 ? (list[0].newName || list[0].originalName) + ". " : "") + "O documento sai de todas as listas e vai para a aba Lixeira, de onde você pode restaurá-lo ou excluí-lo definitivamente. O arquivo gravado na pasta do computador só é apagado na exclusão definitiva.", "Mover para a lixeira");
-  if(!ok) return;
+  if(!ok) return false;
   for(const d of list){ d.trashFrom = d.status; d.status = "trash"; d.trashAt = Date.now(); delete d._hay; state.sel.delete(d.id); await dbPut(d); }
   if(state.viewerId && list.some(d => d.id === state.viewerId)) closeViewer();
   toast(list.length === 1 ? "Documento movido para a lixeira." : `${list.length} documentos movidos para a lixeira.`); render();
+  return true;
 }
 async function restoreTrash(ids){
-  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return false;
   for(const d of list){ d.status = d.trashFrom === "archived" ? "archived" : "pending"; delete d.trashFrom; delete d.trashAt; delete d._hay; await dbPut(d); }
   toast(list.length === 1 ? "Documento restaurado." : `${list.length} documentos restaurados.`); render();
+  return true;
 }
 async function purgeIds(ids){
-  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return;
+  const list = ids.map(byId).filter(d => d && d.status === "trash"); if(!list.length) return false;
   const files = list.filter(d => d.diskPath).length, one = list.length === 1;
   const ok = await askConfirm("Excluir definitivamente?", (one ? `“${list[0].newName || list[0].originalName}” será apagado` : `${list.length} documentos serão apagados`) + " do navegador" + (files ? " e da pasta de armazenamento do computador" : "") + ". ESTA AÇÃO É DEFINITIVA E NÃO TEM COMO SER DESFEITA.", "Excluir definitivamente");
-  if(!ok) return;
+  if(!ok) return false;
   let diskOk = true;
   if(files){
     diskOk = !!(state.dir.handle && await ensurePerm());
-    if(!diskOk && !(await askConfirm("Pasta do computador indisponível", `Não foi possível acessar a pasta de armazenamento para apagar ${files === 1 ? "o arquivo gravado nela" : "os arquivos gravados nela"}. Excluir mesmo assim apenas do navegador? ${files === 1 ? "O arquivo continuará" : "Os arquivos continuarão"} na pasta.`, "Excluir só do navegador"))) return;
+    if(!diskOk && !(await askConfirm("Pasta do computador indisponível", `Não foi possível acessar a pasta de armazenamento para apagar ${files === 1 ? "o arquivo gravado nela" : "os arquivos gravados nela"}. Excluir mesmo assim apenas do navegador? ${files === 1 ? "O arquivo continuará" : "Os arquivos continuarão"} na pasta.`, "Excluir só do navegador"))) return false;
   }
   const P = Prog.start("Excluindo definitivamente", {delay: 400}); let i = 0, fail = 0, done = 0;
   try{
@@ -2688,6 +2560,7 @@ async function purgeIds(ids){
     P.finish(`${done} documento${done === 1 ? "" : "s"} excluído${done === 1 ? "" : "s"} definitivamente.`);
   } finally{ P.close(); }
   toast(`${done} documento${done === 1 ? "" : "s"} excluído${done === 1 ? "" : "s"} definitivamente.` + (fail ? ` ${fail} não puderam ser apagados da pasta e continuam na lixeira.` : "")); render();
+  return done>0 ? (fail ? {success:false,partial:true} : true) : false;
 }
 function viewTrash(){
   const L = trashList();
@@ -2864,7 +2737,7 @@ function qItem(d){
     <div class="qhead">
       <label class="chk"><input type="checkbox" data-act="sel" data-id="${d.id}" ${state.sel.has(d.id) ? "checked" : ""} aria-label="Selecionar ${esc(d.originalName)}"></label>
       <div class="qtitle"><strong>${esc(d.originalName)}</strong>${d.noText ? `<span class="flag">${d.ocrError ? "Não consegui ler este PDF (" + esc(d.ocrError) + "). " : "Sem texto legível. "}Preencha os campos à mão.</span>` : ""}${d.ocr ? '<span class="flag">Documento escaneado, lido por OCR. Confira os dados, principalmente os nomes.</span>' : ""}${wc(folderName(d)) === 1 ? '<span class="flag">Nome curto: confira se o nome completo da empresa ou da pessoa está preenchido.</span>' : ""}${d.tpl ? `<span class="muted">Modelo aplicado: ${esc(d.tpl)}</span>` : ""}</div>
-      ${d.noText ? "" : `${aiReady() ? `<button class="btn ghost sm" data-act="ai" data-id="${d.id}" type="button">Ler com IA</button>` : ""}<button class="btn ghost sm" data-act="teach" data-id="${d.id}" type="button">Ensinar leitura</button>`}
+      ${d.noText ? "" : `<button class="btn ghost sm" data-act="teach" data-id="${d.id}" type="button">Ensinar leitura</button>`}
       ${d.status === "pending" && !d.noText ? `<button class="btn sm ${needsReview(d) ? "primary" : ""}" data-act="review-open" data-id="${d.id}" type="button">Revisar</button>` : ""}
       <button class="btn ghost sm" data-act="showtext" data-id="${d.id}" type="button">Texto lido</button>
       <button class="btn ghost sm" data-act="view" data-id="${d.id}" type="button">Ver PDF</button>
@@ -3528,7 +3401,7 @@ function openEdit(id){
   $("#editdoc").hidden = false; $("#ed-issuer").focus();
 }
 async function saveEdit(){
-  const d = byId(editId); if(!d) return;
+  const d = byId(editId); if(!d) return false;
   const v = k => $("#ed-" + k).value.trim();
   const oldFolder = d.folderName;
   Object.assign(d, {type: $("#ed-type").value, issuer: v("issuer"), person: v("person"), date: v("date"), value: parseBR(v("value")), docNumber: v("docNumber"), folderDate: v("fdate")});
@@ -3546,6 +3419,7 @@ async function saveEdit(){
   await dbPut(d); $("#editdoc").hidden = true; editId = null;
   toast("Documento corrigido."); render();
   if(state.dir.handle && state.dir.perm === "granted") syncDisk();
+  return true;
 }
 /* ---------- eventos ---------- */
 document.addEventListener("click", async e => {
@@ -3589,8 +3463,6 @@ document.addEventListener("click", async e => {
     case "remove-sel": deleteIds([...state.sel]); break;
     case "reread": rereadArchive(); break;
     case "reocr": reocrArchive(); break;
-    case "aiarch": aiArchive(); break;
-    case "ai": aiReadDoc(id); break;
     case "teach": openTeach(id); break;
     case "tk": tkClick(+el.dataset.k, +el.dataset.t); break;
     case "tmode": TE.mode = el.dataset.v; TE.p = null; drawTeach(); break;
@@ -4339,12 +4211,15 @@ document.addEventListener("paste", e => {
   async function persist(){await putA('state',A.state);}
   function who(){return A.session?A.session.nome:'Sistema';}
   function can(p){return !!A.session&&(A.session.perfil==='admin'||!!(A.session.perms&&A.session.perms[p]));}
-  function record(type,action,target,detail){
-    const row={id:A.state.seq++,at:new Date().toISOString(),user:who(),login:A.session?A.session.login:'',type,action,target:String(target||''),detail:String(detail||'')};
-    (type==='processamento'?A.state.history:A.state.audit).push(row);
-    const cap=type==='processamento'?15000:25000;const arr=type==='processamento'?A.state.history:A.state.audit;if(arr.length>cap)arr.splice(0,arr.length-cap);
-    persist().catch(e=>console.warn('Falha ao salvar auditoria local',e));
+  function record(type,action,target,detail,meta){
+    meta=meta||{};const rawTarget=String(target||''),ids=rawTarget.split(/[;,]/).map(v=>v.trim()).filter(Boolean);let documentContext=[];
+    try{if(typeof state!=='undefined'&&state&&Array.isArray(state.docs))documentContext=state.docs.filter(d=>ids.includes(String(d.id))).map(d=>({id:String(d.id||''),name:String(d.newName||d.originalName||'Documento sem nome'),originalName:String(d.originalName||''),newName:String(d.newName||''),person:String(d.person||''),issuer:String(d.issuer||''),docNumber:String(d.docNumber||''),type:String(d.type||''),folderName:String(d.folderName||''),date:String(d.date||''),status:String(d.status||'')}));}catch(e){}
+    const row={id:A.state.seq++,at:new Date().toISOString(),user:who(),login:A.session?A.session.login:'',type,action,target:rawTarget,detail:String(detail||'')};
+    if(type==='auditoria'){row.command=String(meta.command||action||'Atividade no sistema');row.performed=String(meta.performed||rawTarget||'Atividade registrada');row.status=String(meta.status||'Registrado');if(documentContext.length)row.documentContext=documentContext;}
+    (type==='processamento'?A.state.history:A.state.audit).push(row);const cap=type==='processamento'?15000:25000,arr=type==='processamento'?A.state.history:A.state.audit;if(arr.length>cap)arr.splice(0,arr.length-cap);
+    persist().catch(e=>console.warn('Falha ao salvar auditoria local',e));return row;
   }
+  function finishAudit(row,status,detail){if(!row)return;row.status=status;if(detail)row.detail=String(detail);row.finishedAt=new Date().toISOString();persist().catch(e=>console.warn('Falha ao atualizar auditoria local',e));}
   function toastA(msg){try{if(typeof toast==='function')toast(msg);}catch(e){}}
   function build(){
     const screen=document.createElement('div');screen.id='arqAuthScreen';screen.hidden=true;screen.innerHTML='<div class="authbox"><div class="authbrand"><img alt="Hillo" id="arqAuthLogo" hidden><strong id="arqAuthBrandText">HILLO</strong></div><h2 id="arqAuthTitle">Arquivo Digital</h2><p id="arqAuthDesc"></p><div id="arqAuthFields"></div><div class="autherr" id="arqAuthError"></div><button class="authbtn" id="arqAuthSubmit" type="button"></button><div class="authnote">Acesso individual · Dados armazenados neste navegador</div></div>';
@@ -4370,6 +4245,7 @@ document.addEventListener("paste", e => {
     });
   }
   function showAuth(first){
+    document.documentElement.classList.add('auth-login-open');document.body.classList.add('auth-login-open');
     const sc=$a('#arqAuthScreen');sc.hidden=false;$a('#arqAuthTitle').textContent=first?'Primeiro acesso':'Arquivo Digital';
     $a('#arqAuthDesc').textContent=first?'Crie o usuário administrador do sistema.':'Informe seus dados para entrar.';
     $a('#arqAuthFields').innerHTML=(first?'<div class="f2"><label>Nome completo</label><input id="arqAuthName" autocomplete="name" autofocus></div>':'')+'<div class="f2"><label>Usuário</label><input id="arqAuthLogin" autocomplete="username" autofocus></div><div class="f2"><label>Senha</label><input id="arqAuthPassword" type="password" autocomplete="current-password"></div>'+(first?'<div class="f2"><label>Confirmar senha</label><input id="arqAuthPassword2" type="password" autocomplete="new-password"></div>':'');
@@ -4380,20 +4256,38 @@ document.addEventListener("paste", e => {
     if(first){const nome=$a('#arqAuthName').value.trim(),p2=$a('#arqAuthPassword2').value;if(!nome||!login){err.textContent='Informe nome e usuário.';return;}if(!/^[a-z0-9._-]{2,30}$/.test(login)){err.textContent='O usuário deve ter de 2 a 30 caracteres (letras, números, ponto, hífen ou sublinhado).';return;}if(pw.length<4){err.textContent='A senha deve ter ao menos 4 caracteres.';return;}if(pw!==p2){err.textContent='As senhas não conferem.';return;}const salt=saltA(),u={id:'u'+uidA(),nome,login,perfil:'admin',ativo:true,perms:{},salt,hash:hashA(pw,salt),createdAt:new Date().toISOString()};A.state.users.push(u);A.session=u;record('auditoria','Criou administrador inicial',nome,'Primeiro acesso');await persist();enter();return;}
     const u=A.state.users.find(x=>x.login===login&&x.ativo);if(!u||u.hash!==hashA(pw,u.salt)){err.textContent='Usuário ou senha inválidos.';record('auditoria','Tentativa de login inválida',login,'Credenciais inválidas');return;}A.session=u;try{sessionStorage.setItem('arquivo_digital_user',u.id);}catch(e){}record('auditoria','Login','Acesso ao sistema','');await persist();enter();
   }
-  function enter(){ $a('#arqAuthScreen').hidden=true;$a('#arqAuthToolbar').hidden=false;$a('#arqAuthWho').textContent=A.session.nome+' · '+(A.session.perfil==='admin'?'Administrador':'Operador');installToolbar();record('auditoria','Acesso autorizado','Sessão iniciada',A.session.perfil);persist(); }
+  function enter(){ document.documentElement.classList.remove('auth-login-open');document.body.classList.remove('auth-login-open');$a('#arqAuthScreen').hidden=true;$a('#arqAuthToolbar').hidden=false;$a('#arqAuthWho').textContent=A.session.nome+' · '+(A.session.perfil==='admin'?'Administrador':'Operador');installToolbar();record('auditoria','Acesso autorizado','Sessão iniciada',A.session.perfil);persist(); }
   async function logout(){record('auditoria','Logout','Sessão encerrada','');await persist();A.session=null;try{sessionStorage.removeItem('arquivo_digital_user');}catch(e){}$a('#arqAuthToolbar').hidden=true;$a('#arqAuthPanel').hidden=true;showAuth(false);}
-  const ACTION_PERM={pick:'importar',pickdir:'importar',tab:'visualizar',mode:'visualizar',nav:'visualizar',open:'visualizar',flat:'visualizar',sel:'visualizar',selall:'visualizar',view:'visualizar',showtext:'visualizar',edit:'editar','ed-save':'editar','fix-save':'editar','fix-edit':'editar','rv-recalc':'revisar','rv-learn':'revisar','rv-confirm':'revisar','rv-save-arch':'revisar','review-open':'revisar','archive-sel':'arquivar','archive-all':'arquivar',del:'excluir','b-del':'excluir','remove-sel':'excluir','t-purge':'excluir','t-empty':'excluir','folder-del':'pastas', 't-restore':'excluir','t-restore-all':'excluir',reset:'excluir',hardreset:'excluir',share:'exportar',dl:'exportar','b-dl':'exportar','b-share':'exportar','export-all':'exportar','bk-export':'backup','bk-import':'backup','kb-save':'aprendizado','kb-edit':'aprendizado','kb-cancel':'aprendizado','kb-del':'aprendizado','kb-boot':'aprendizado','kb-apply':'aprendizado','kb-test':'aprendizado','kb-export':'aprendizado','kb-import':'aprendizado',teach:'aprendizado',tk:'aprendizado',tmode:'aprendizado',tclr:'aprendizado',tsave:'aprendizado',tdel:'aprendizado','dir-pick':'pastas','dir-forget':'pastas','dir-forgetall':'pastas','dir-rescan':'pastas','dir-sync':'pastas','dir-syncfull':'pastas','dir-fix':'pastas','cfg-pick':'pastas','cfg-clear':'pastas','dir-grant':'pastas','folders-open':'pastas',reread:'revisar',reocr:'revisar',ai:'revisar',aiarch:'revisar','fix-reread':'revisar','fix-reread-all':'revisar','fix-date':'editar','fix-name':'editar','fix-edit':'editar','ed-save':'editar','kbfile':'aprendizado'};
+  const ACTION_PERM={pick:'importar',pickdir:'importar',tab:'visualizar',mode:'visualizar',nav:'visualizar',open:'visualizar',flat:'visualizar',sel:'visualizar',selall:'visualizar',view:'visualizar',showtext:'visualizar',edit:'editar','ed-save':'editar','fix-save':'editar','fix-edit':'editar','rv-recalc':'revisar','rv-learn':'revisar','rv-confirm':'revisar','rv-save-arch':'revisar','review-open':'revisar','archive-sel':'arquivar','archive-all':'arquivar',del:'excluir','b-del':'excluir','remove-sel':'excluir','t-purge':'excluir','t-empty':'excluir','folder-del':'pastas', 't-restore':'excluir','t-restore-all':'excluir',reset:'excluir',hardreset:'excluir',share:'exportar',dl:'exportar','b-dl':'exportar','b-share':'exportar','export-all':'exportar','bk-export':'backup','bk-import':'backup','kb-save':'aprendizado','kb-edit':'aprendizado','kb-cancel':'aprendizado','kb-del':'aprendizado','kb-boot':'aprendizado','kb-apply':'aprendizado','kb-test':'aprendizado','kb-export':'aprendizado','kb-import':'aprendizado',teach:'aprendizado',tk:'aprendizado',tmode:'aprendizado',tclr:'aprendizado',tsave:'aprendizado',tdel:'aprendizado','dir-pick':'pastas','dir-forget':'pastas','dir-forgetall':'pastas','dir-rescan':'pastas','dir-sync':'pastas','dir-syncfull':'pastas','dir-fix':'pastas','cfg-pick':'pastas','cfg-clear':'pastas','dir-grant':'pastas','folders-open':'pastas',reread:'revisar',reocr:'revisar','fix-reread':'revisar','fix-reread-all':'revisar','fix-date':'editar','fix-name':'editar','fix-edit':'editar','ed-save':'editar','kbfile':'aprendizado'};
   function blocked(msg){toastA(msg||'Seu usuário não tem permissão para realizar esta ação.');}
+  const AUDIT_WRAPPED_ACTS=new Set(['pick','pickdir','archive-sel','archive-all','del','remove-sel','t-purge','t-empty','t-restore','t-restore-all','ed-save','rv-save-arch','reread','reocr','reset','hardreset' ,'rv-learn','rv-confirm','kb-save','bk-export','bk-import','dir-sync','dir-syncfull','dir-rescan','folder-del','fix-save']);
   document.addEventListener('click',e=>{
     if(!A.ready)return;
     if(!$a('#arqAuthScreen').hidden){if(!e.target.closest('#arqAuthScreen')){e.preventDefault();e.stopImmediatePropagation();}return;}
     const el=e.target.closest('[data-act]');if(!el)return;const act=el.dataset.act,perm=ACTION_PERM[act];
     if(perm&&!can(perm)){e.preventDefault();e.stopImmediatePropagation();blocked();return;}
-    const label=act.replace(/[-_]/g,' ');record('auditoria','Ação no sistema',label,el.dataset.id?'Registro '+el.dataset.id:'');
+    if(AUDIT_WRAPPED_ACTS.has(act))return;
+    const label=act.replace(/[-_]/g,' ');
+    record('auditoria','Ação no sistema',label,el.dataset.id?'Registro '+el.dataset.id:'',{command:'Interação com o sistema',performed:auditActionLabel(label),status:'Registrado'});
   },true);
   function guardDocField(e){if(!A.ready||!A.session)return;const el=e.target;if(el.dataset&&el.dataset.f&&!can('editar')){e.preventDefault();e.stopImmediatePropagation();const d=typeof byId==='function'?byId(el.dataset.id):null;if(d)el.value=el.dataset.f==='value'?(d.value==null?'':String(d.value)):String(d[el.dataset.f]??'');blocked('Seu usuário não tem permissão para editar documentos.');return;}if(e.type==='change'&&el.dataset&&el.dataset.f){const d=typeof byId==='function'?byId(el.dataset.id):null;record('auditoria','Alterou campo de documento',d?(d.originalName||d.newName):el.dataset.id,el.dataset.f);}}
   document.addEventListener('input',guardDocField,true);document.addEventListener('change',guardDocField,true);
-  function wrap(name,perm,label,history){const original=window[name];if(typeof original!=='function')return;window[name]=async function(...args){if(A.ready&&!can(perm)){blocked();return;}if(A.ready&&A.session){const target=history&&history.target?history.target(args):'';record('processamento',label,target,history&&history.detail?history.detail(args):'');}try{const result=await original.apply(this,args);if(A.ready&&A.session)record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,history&&history.target?history.target(args):'',name==='addFiles'?(args[0]||[]).length+' arquivo(s) processado(s)':'Operação concluída');return result;}catch(err){if(A.ready&&A.session)record('processamento','Falha durante a operação: '+label,history&&history.target?history.target(args):'',String(err&&err.message||err));throw err;}};}
+  function wrap(name,perm,label,history){
+    const original=window[name];if(typeof original!=='function')return;
+    window[name]=async function(...args){
+      if(A.ready&&!can(perm)){blocked();return;}
+      let auditRow=null;const target=history&&history.target?history.target(args):'',detail=history&&history.detail?history.detail(args):'';
+      if(A.ready&&A.session){record('processamento',label,target,detail);auditRow=record('auditoria',label,target,detail,{command:label,performed:label,status:'Em andamento'});}
+      try{
+        const result=await original.apply(this,args);
+        if(A.ready&&A.session){const failed=result===false||(result&&typeof result==='object'&&result.success===false&&!result.partial),partial=!!(result&&typeof result==='object'&&result.partial),confirmed=result===true||(result&&typeof result==='object'&&result.success===true),status=failed?'Não concluído':partial?'Concluído parcialmente':confirmed?'Concluído':'Registrado',msg=failed?'A operação não foi concluída.':partial?'A operação foi realizada parcialmente. Consulte os detalhes para identificar o que ficou pendente.':confirmed?'A operação foi concluída e confirmada.':'A função terminou, mas não retornou uma confirmação suficiente para afirmar que a operação foi concluída.';if(confirmed||partial)record('processamento',name==='addFiles'?'Concluiu leitura e classificação dos PDFs':'Concluiu: '+label,target,msg);finishAudit(auditRow,status,msg);}
+        return result;
+      }catch(err){
+        if(A.ready&&A.session){const reason=String(err&&err.message||err||'Erro não informado');record('processamento','Falha durante a operação: '+label,target,reason);finishAudit(auditRow,'Não concluído',reason);}
+        throw err;
+      }
+    };
+  }
   function installWrappers(){
     wrap('addFiles','importar','Iniciou leitura de PDFs',{target:a=>Array.from(a[0]||[]).map(f=>f.name).join('; '),detail:a=>(a[0]||[]).length+' arquivo(s) selecionado(s)'});
     wrap('archiveIds','arquivar','Renomeou e arquivou documentos',{target:a=>(a[0]||[]).join('; '),detail:a=>(a[0]||[]).length+' documento(s)'});
@@ -4406,8 +4300,6 @@ document.addEventListener("paste", e => {
     wrap('reocrArchive','revisar','Executou OCR em documentos arquivados',{target:()=> 'Arquivo'});
     wrap('resetAll','excluir','Solicitou zerar dados do sistema',{target:()=> 'Todos os documentos'});
     wrap('hardReset','excluir','Solicitou reset completo do sistema',{target:()=> 'Sistema local'});
-    wrap('aiReadDoc','revisar','Leitura assistida por IA',{target:a=>a[0]||''});
-    wrap('aiArchive','revisar','Leitura assistida por IA no arquivo',{target:()=> 'Documentos arquivados'});
     wrap('reviewLearn','revisar','Aplicou aprendizado a partir da revisão',{target:()=> 'Documento em revisão'});
     wrap('confirmReview','revisar','Confirmou dados da revisão',{target:()=> 'Documento em revisão'});
     wrap('saveTeach','aprendizado','Salvou modelo de leitura',{target:()=> 'Modelo de leitura'});
@@ -4448,85 +4340,31 @@ document.addEventListener("paste", e => {
   }
   function historyHTML(){const q=A.search.toLowerCase(),L=A.state.history.slice().reverse().filter(x=>!q||[x.user,x.action,x.target,x.detail].join(' ').toLowerCase().includes(q));return `<div class="ap-card"><div class="ap-row"><input id="apSearch" placeholder="Buscar processamento, documento ou usuário..." value="${escA(A.search)}" style="flex:1;min-width:220px"><span class="ap-muted">${L.length} registro(s)</span><button class="ap-btn ghost" data-auth="export-history">Exportar JSON</button></div><div class="ap-table"><table><thead><tr><th>Data e hora</th><th>Usuário</th><th>Processamento</th><th>Documento / item</th><th>Detalhes</th></tr></thead><tbody>${L.map(x=>`<tr><td>${new Date(x.at).toLocaleString('pt-BR')}</td><td>${escA(x.user)}</td><td><b>${escA(x.action)}</b></td><td>${escA(x.target)}</td><td>${escA(x.detail)}</td></tr>`).join('')||'<tr><td colspan="5">Nenhum processamento registrado.</td></tr>'}</tbody></table></div></div>`;}
   const AUDIT_LABELS={
-    'Ação no sistema':'Ação realizada no sistema','Alterou campo de documento':'Informação do documento alterada',
-    'Tentativa de login inválida':'Tentativa de acesso recusada','Login':'Acesso realizado',
-    'Acesso autorizado':'Sessão iniciada','Logout':'Saiu do sistema','Abriu o sistema':'Abriu o Arquivo Digital',
-    'Criou administrador inicial':'Administrador inicial cadastrado','Alterou usuário':'Dados do usuário alterados',
-    'Cadastrou usuário':'Novo usuário cadastrado','Ativou usuário':'Usuário ativado','Desativou usuário':'Usuário desativado',
-    'Excluiu usuário':'Usuário excluído','Exportou registros':'Registros exportados',
-    'Iniciou leitura de PDFs':'Iniciou a leitura dos documentos','Concluiu: Iniciou leitura de PDFs':'Leitura dos documentos concluída',
-    'Concluiu leitura e classificação dos PDFs':'Leitura e classificação concluídas',
-    'Renomeou e arquivou documentos':'Documento(s) arquivado(s)','Enviou documentos para exclusão':'Documento(s) enviado(s) para a lixeira',
-    'Excluiu documentos definitivamente':'Documento(s) excluído(s) definitivamente','Restaurou documentos da lixeira':'Documento(s) restaurado(s)',
-    'Salvou edição de documento':'Alteração do documento salva','Salvou revisão de documento':'Revisão do documento salva',
-    'Releu documentos':'Leitura dos documentos refeita','Executou OCR em documentos arquivados':'Leitura automática refeita',
-    'Solicitou zerar dados do sistema':'Solicitou apagar os dados do sistema','Solicitou reset completo do sistema':'Solicitou reiniciar o sistema',
-    'Leitura assistida por IA':'Leitura assistida do documento','Leitura assistida por IA no arquivo':'Leitura assistida dos documentos arquivados',
-    'Aplicou aprendizado a partir da revisão':'Aprendizado aplicado','Confirmou dados da revisão':'Dados da revisão confirmados',
-    'Salvou modelo de leitura':'Modelo de leitura salvo','Reaplicou modelos de aprendizado':'Modelos de leitura reaplicados',
-    'Exportou backup completo':'Cópia de segurança criada','Importou backup completo':'Cópia de segurança restaurada',
-    'Sincronizou pasta local':'Pasta local sincronizada','Executou ferramenta de sincronização':'Sincronização executada',
-    'Excluiu pasta do computador':'Pasta excluída','Corrigiu data do documento':'Data do documento corrigida'
+    'Ação no sistema':'Interação com o sistema','Alterou campo de documento':'Alteração de informação do documento','Tentativa de login inválida':'Tentativa de acesso recusada','Login':'Entrada no sistema','Acesso autorizado':'Sessão iniciada','Logout':'Saída do sistema','Abriu o sistema':'Abertura do Arquivo Digital','Criou administrador inicial':'Cadastro do administrador inicial','Alterou usuário':'Alteração de usuário','Cadastrou usuário':'Cadastro de usuário','Ativou usuário':'Ativação de usuário','Desativou usuário':'Desativação de usuário','Excluiu usuário':'Exclusão de usuário','Exportou registros':'Exportação dos registros','Iniciou leitura de PDFs':'Início da leitura dos PDFs','Concluiu: Iniciou leitura de PDFs':'Conclusão da leitura dos PDFs','Concluiu leitura e classificação dos PDFs':'Leitura e classificação dos PDFs','Renomeou e arquivou documentos':'Arquivamento de documentos','Enviou documentos para exclusão':'Envio de documentos para a Lixeira','Excluiu documentos definitivamente':'Exclusão definitiva de documentos','Restaurou documentos da lixeira':'Restauração de documentos','Salvou edição de documento':'Salvamento da edição do documento','Salvou revisão de documento':'Salvamento da revisão do documento','Releu documentos':'Nova leitura de documentos','Executou OCR em documentos arquivados':'Nova leitura automática dos documentos','Solicitou zerar dados do sistema':'Solicitação para apagar os dados do sistema','Solicitou reset completo do sistema':'Solicitação para reiniciar o sistema','Aplicou aprendizado a partir da revisão':'Aplicação do aprendizado da revisão','Confirmou dados da revisão':'Confirmação dos dados da revisão','Salvou modelo de leitura':'Salvamento de modelo de leitura','Reaplicou modelos de aprendizado':'Reaplicação dos modelos de aprendizado','Exportou backup completo':'Criação de cópia de segurança','Importou backup completo':'Restauração de cópia de segurança','Sincronizou pasta local':'Sincronização da pasta do computador','Executou ferramenta de sincronização':'Execução da sincronização','Excluiu pasta do computador':'Exclusão de pasta do computador','Corrigiu data do documento':'Correção da data do documento'
   };
-  function auditOperation(x){
-    const a=String(x.action||'');
-    if(AUDIT_LABELS[a])return AUDIT_LABELS[a];
-    if(/^Falha durante a operação:/i.test(a))return 'Não foi possível concluir a operação';
-    if(/^Concluiu:/i.test(a))return 'Operação concluída';
-    if(/^Ação no sistema$/i.test(a))return 'Ação realizada no sistema';
-    return a.replace(/[_-]+/g,' ').replace(/\b(login|logout|insert|update|delete|restore|backup|export|import|ocr|process|failed|success)\b/gi,w=>({
-      login:'acesso',logout:'saída',insert:'inclusão',update:'alteração',delete:'exclusão',restore:'restauração',
-      backup:'cópia de segurança',export:'exportação',import:'importação',ocr:'leitura automática',
-      process:'processamento',failed:'não concluído',success:'concluído'
-    }[w.toLowerCase()]||w));
-  }
-  function auditResult(x){
-    const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();
-    if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';
-    if(/solicitou/.test(s))return 'Solicitado';
-    if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';
-    if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';
-    return 'Registrado';
-  }
-  function auditDescription(x){
-    const op=auditOperation(x),item=String(x.target||'').trim(),detail=String(x.detail||'').trim();
-    if(/tentativa de login inválida/i.test(x.action||''))return 'Houve uma tentativa de entrar no sistema, mas os dados informados não foram aceitos.';
-    if(/^Ação no sistema$/i.test(x.action||''))return `O usuário realizou a ação “${item||'ação não identificada'}” no sistema.${detail?' '+detail+'.':''}`;
-    if(/Alterou campo de documento/i.test(x.action||''))return `O usuário alterou uma informação do documento ${item||'não identificado'}.${detail?' Campo alterado: '+detail+'.':''}`;
-    if(item)return `O usuário ${op.charAt(0).toLowerCase()+op.slice(1).replace(/[.]$/,'')} — ${item}.${detail?' '+detail:''}`;
-    return `O usuário ${op.charAt(0).toLowerCase()+op.slice(1).replace(/[.]$/,'')}.${detail?' '+detail:''}`;
-  }
+  function auditCommand(x){const raw=String(x.command||x.action||'Atividade no sistema');if(AUDIT_LABELS[raw])return AUDIT_LABELS[raw];if(/^Falha durante a operação:|^Concluiu:/i.test(raw))return 'Execução de operação';if(/^Ação no sistema$/i.test(raw))return 'Interação com o sistema';return raw.replace(/[_-]+/g,' ');}
+  function auditOperation(x){return auditCommand(x);}
+  function auditResult(x){const ok=['Concluído','Concluído parcialmente','Não concluído','Solicitado','Registrado','Em andamento'];if(ok.includes(String(x.status||'')))return x.status;const s=(String(x.action||'')+' '+String(x.detail||'')).toLowerCase();if(/falha|inválid|recusad|erro|não foi possível|nao foi possivel/.test(s))return 'Não concluído';if(/solicitou/.test(s))return 'Solicitado';if(/ação no sistema|alterou campo de documento|abriu o sistema|iniciou leitura/i.test(String(x.action||'')))return 'Registrado';if(/login|acesso autorizado|concluiu|salvou|cadastrou|alterou usuário|ativou usuário|desativou usuário|excluiu|restaurou|exportou|importou|sincronizou|reaplicou|confirmou|corrigiu|executou|releu/i.test(String(x.action||'')))return 'Concluído';return 'Registrado';}
+  function auditDocument(idOrName){const raw=String(idOrName||'').trim();if(!raw)return null;try{const docs=(typeof state!=='undefined'&&state&&Array.isArray(state.docs))?state.docs:[];const found=docs.find(d=>String(d.id)===raw||String(d.originalName||'')===raw||String(d.newName||'')===raw);if(found)return {name:String(found.newName||found.originalName||'Documento sem nome'),doc:found};}catch(e){}return null;}
+  function auditItem(x){if(Array.isArray(x.documentContext)&&x.documentContext.length){const names=x.documentContext.map(d=>d.name||d.newName||d.originalName).filter(Boolean);if(names.length)return names.length===1?names[0]:names.length+' documentos: '+names.slice(0,3).join('; ')+(names.length>3?' e mais '+(names.length-3):'');}const raw=String(x.target||'').trim(),found=auditDocument(raw);if(found)return found.name;if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(raw);if(/^(tab|menu |archive consult|del$|v close$|view$|open$|admin$)/i.test(raw))return auditActionLabel(raw);if(/^[a-f0-9-]{16,}$/i.test(raw))return 'Documento identificado pelo código '+raw;return raw||'Atividade geral do sistema';}
+  function auditActionLabel(raw){const key=String(raw||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');const map={'tab':'Acessou uma seção do sistema','menu archives':'Abriu o menu Arquivos','archive consult':'Abriu a consulta de arquivos','del':'Abriu a opção de enviar para a Lixeira','v close':'Fechou a visualização do documento','view':'Abriu a visualização de um documento','open':'Abriu um documento ou item','admin':'Abriu a área administrativa','menu settings':'Abriu as configurações','menu settings data':'Abriu as configurações de dados','ac search':'Pesquisou documentos arquivados','ac clear':'Limpou os filtros da consulta','edit':'Abriu a edição de um documento','showtext':'Abriu o texto extraído do documento','archive sel':'Solicitou o arquivamento dos documentos selecionados','t restore':'Solicitou a restauração de documentos da Lixeira','t purge':'Solicitou a exclusão definitiva de documentos'};return map[key]||('Acessou o recurso '+String(raw||'não identificado').replace(/[_-]+/g,' '));}
+  function auditPerformed(x){const item=auditItem(x),raw=String(x.command||x.action||''),verbs={'Iniciou leitura de PDFs':'Iniciou a leitura de','Renomeou e arquivou documentos':'Renomeou e arquivou','Enviou documentos para exclusão':'Moveu para a Lixeira','Excluiu documentos definitivamente':'Excluiu definitivamente','Restaurou documentos da lixeira':'Restaurou','Salvou edição de documento':'Salvou as alterações em','Salvou revisão de documento':'Salvou a revisão de','Releu documentos':'Fez uma nova leitura de','Executou OCR em documentos arquivados':'Executou leitura automática de','Exportou backup completo':'Criou uma cópia de segurança','Importou backup completo':'Restaurou uma cópia de segurança','Sincronizou pasta local':'Sincronizou a pasta','Executou ferramenta de sincronização':'Executou a sincronização da pasta'};const detail=String(x.detail||'').trim();if(Array.isArray(x.documentContext)&&x.documentContext.length)return (verbs[raw]||auditCommand(x))+': '+item;if(x.performed&&x.performed!==x.target&&x.performed!==raw)return String(x.performed);if(/^Ação no sistema$/i.test(x.action||''))return auditActionLabel(x.target);if(/^[a-f0-9-]{16,}$/i.test(item))return verbs[raw]||auditCommand(x);return item&&detail?item+'. '+detail:item||detail||'O sistema registrou a atividade informada.';}
+  function auditDescription(x){const performed=auditPerformed(x),detail=String(x.detail||'').trim();if(x._group)return 'O usuário realizou '+x._group.length+' ações de navegação em sequência. Todas as ações individuais continuam disponíveis nos detalhes.';if(/tentativa de login inválida/i.test(x.action||''))return 'O acesso não foi autorizado porque as credenciais informadas não foram aceitas.';if(/^Ação no sistema$/i.test(x.action||'')){const a=auditActionLabel(x.target);return 'O usuário '+a.charAt(0).toLowerCase()+a.slice(1)+'. O registro confirma a interação, mas não significa que uma operação tenha sido concluída.';}if(/Alterou campo de documento/i.test(x.action||''))return 'O usuário alterou o campo “'+(detail||'campo não identificado')+'” do documento '+performed+'.';if(/Iniciou leitura de PDFs/i.test(x.action||''))return 'A leitura dos arquivos foi iniciada. Este registro não confirma que o processamento terminou.';if(/^Falha durante a operação:/i.test(x.action||''))return 'O sistema não conseguiu concluir a operação. Motivo: '+(detail||'não informado')+'.';if(/Solicitou/i.test(x.action||''))return 'A operação foi solicitada, mas este registro não confirma sua conclusão.';if(auditResult(x)==='Concluído')return 'O sistema confirmou a conclusão da operação. '+performed+(detail?' — '+detail:'');return 'O sistema registrou a atividade: '+performed+(detail?' — '+detail:'');}
+  function auditDetailHTML(x,result,desc){const d=new Date(x.at),when=Number.isNaN(d.getTime())?'Data e horário não disponíveis':d.toLocaleString('pt-BR'),docs=Array.isArray(x.documentContext)?x.documentContext:[],found=auditDocument(x.target),doc=found&&found.doc,fields=[],labels={originalName:'Nome original',newName:'Nome no arquivo',person:'Pessoa/empresa',issuer:'Emissor',docNumber:'Número do documento',type:'Tipo',folderName:'Pasta',date:'Data do documento',status:'Situação atual'},contexts=docs.length?docs:(doc?[{...doc,name:doc.newName||doc.originalName}]:[]);
+    contexts.forEach((item,index)=>{fields.push(['Documento '+(index+1),item.name||item.newName||item.originalName||'Documento sem nome']);Object.keys(labels).forEach(k=>{const v=item[k];if(v!==undefined&&v!==null&&String(v).trim()!=='')fields.push([labels[k],String(v)]);});});
+    const esc=v=>escA(String(v??'—'));let html='<div class="ap-audit-detail-content"><p>'+esc(desc)+'</p><dl>';const pairs=[['Responsável',(x.user||'Sistema')+(x.login?' ('+x.login+')':'')],['Data e horário',when],['Comando',auditCommand(x)],['O que foi realizado',auditPerformed(x)],['Status do comando',result]];fields.forEach(v=>pairs.push(v));pairs.push(['Informação adicional registrada',x.detail||'Não há informação adicional registrada.'],['Tipo original',x.type],['Ação original',x.action],['Alvo original',x.target],['Identificador do registro',x.id]);pairs.forEach(v=>{html+='<dt>'+esc(v[0])+'</dt><dd>'+esc(v[1])+'</dd>';});
+    if(Array.isArray(x._group))html+='<dt>Ações agrupadas</dt><dd><ul>'+x._group.map(g=>'<li>'+esc(new Date(g.at).toLocaleTimeString('pt-BR')+' — '+auditActionLabel(g.target))+'</li>').join('')+'</ul></dd>';html+='</dl><p class="ap-audit-note">Os dados técnicos originais são preservados. Quando um documento é identificado durante a atividade, seus dados principais ficam associados ao registro para continuar disponíveis mesmo que ele seja removido da lista atual.</p></div>';return html;}
+  function isNavigationAudit(x){if(!/^Ação no sistema$/i.test(x.action||''))return false;const k=String(x.target||'').trim().toLowerCase().replace(/[_-]+/g,' ').replace(/\s+/g,' ');return new Set(['tab','menu archives','archive consult','admin','menu settings','menu settings data']).has(k);}
+  function groupNavigationRows(rows){const out=[];for(let i=0;i<rows.length;){const first=rows[i];if(!isNavigationAudit(first)){out.push(first);i++;continue;}const group=[first];let j=i+1;while(j<rows.length&&isNavigationAudit(rows[j])&&rows[j].user===first.user){const prev=new Date(group[group.length-1].at).getTime(),next=new Date(rows[j].at).getTime();if(!Number.isFinite(prev)||!Number.isFinite(next)||Math.abs(prev-next)>30000)break;group.push(rows[j]);j++;}if(group.length>1){const areas=[...new Set(group.map(g=>auditActionLabel(g.target)))];out.push({...first,command:'Navegação pelo sistema',performed:areas.join('; '),status:'Registrado',_group:group});}else out.push(first);i=j;}return out;}
   function auditHTML(){
-    const all=A.state.audit.slice().reverse(),q=A.search.toLowerCase();
-    const users=[...new Set(all.map(x=>x.user).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR'));
-    const actions=[...new Set(all.map(x=>x.action).filter(Boolean))].sort((a,b)=>auditOperation({action:a}).localeCompare(auditOperation({action:b}),'pt-BR'));
-    const f=A.auditFilters||(A.auditFilters={from:'',to:'',user:'',action:'',result:''});
-    const L=all.filter(x=>{
-      const date=String(x.at||'').slice(0,10),res=auditResult(x);
-      return (!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.user||x.user===f.user)&&(!f.action||x.action===f.action)&&(!f.result||res===f.result)&&
-        (!q||[x.user,x.login,x.action,auditOperation(x),x.target,x.detail,auditDescription(x),res].join(' ').toLowerCase().includes(q));
-    });
-    const options=(items,selected,labels=false)=>items.map(v=>`<option value="${escA(v)}" ${v===selected?'selected':''}>${escA(labels?auditOperation({action:v}):v)}</option>`).join('');
-    const rows=L.map(x=>{
-      const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR');
-      const result=auditResult(x),cls=result==='Concluído'?'ok':result==='Não concluído'?'bad':'pending';
-      const desc=auditDescription(x);
-      return `<tr><td data-label="Data">${date}</td><td data-label="Hora">${time}</td><td data-label="Usuário">${escA(x.user||'Sistema')}</td><td data-label="Operação"><b>${escA(auditOperation(x))}</b><span class="ap-audit-status ${cls}">${result}</span></td><td data-label="Item">${escA(x.target||'—')}</td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary><div><p>${escA(desc)}</p><dl><dt>Resultado</dt><dd>${result}</dd><dt>Descrição registrada</dt><dd>${escA(x.detail||'Não há informação adicional registrada.')}</dd><dt>Tipo original</dt><dd>${escA(x.type||'—')}</dd><dt>Ação original</dt><dd>${escA(x.action||'—')}</dd><dt>Identificador do registro</dt><dd>${escA(x.id??'—')}</dd><dt>Login</dt><dd>${escA(x.login||'—')}</dd></dl></div></details></td></tr>`;
-    }).join('');
-    return `<div class="ap-card ap-audit-card">
-      <div class="ap-audit-intro"><div><strong>Acompanhe as atividades do Arquivo Digital</strong><p>Os registros são apresentados em linguagem simples. As informações técnicas originais continuam preservadas nos detalhes.</p></div><span class="ap-muted">${L.length} de ${all.length} registro(s)</span></div>
-      <div class="ap-audit-search"><input id="apSearch" placeholder="Pesquisar usuário, documento ou descrição..." value="${escA(A.search)}"><button class="ap-btn ghost" data-auth="export-audit">Exportar registros</button></div>
-      <div class="ap-audit-filters">
-        <label>De<input type="date" id="apAuditFrom" value="${escA(f.from)}"></label>
-        <label>Até<input type="date" id="apAuditTo" value="${escA(f.to)}"></label>
-        <label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>${options(users,f.user)}</select></label>
-        <label>Operação<select id="apFilter"><option value="">Todas as operações</option>${options(actions,f.action,true)}</select></label>
-        <label>Resultado<select id="apAuditResult"><option value="">Todos os resultados</option><option ${f.result==='Concluído'?'selected':''}>Concluído</option><option ${f.result==='Não concluído'?'selected':''}>Não concluído</option><option ${f.result==='Solicitado'?'selected':''}>Solicitado</option><option ${f.result==='Registrado'?'selected':''}>Registrado</option></select></label>
-        <button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button>
-      </div>
-      <div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Operação</th><th>Item</th><th>Detalhes</th></tr></thead><tbody>${rows||'<tr><td colspan="6" class="ap-audit-empty">Nenhum registro encontrado para os filtros informados.</td></tr>'}</tbody></table></div>
-      <p class="ap-audit-foot">A auditoria é armazenada no banco local de autenticação e não altera o banco de documentos.</p>
-    </div>`;
+    const all=A.state.audit.slice().reverse(),q=A.search.toLowerCase(),users=[...new Set(all.map(x=>x.user).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'pt-BR')),actions=[...new Set(all.map(x=>x.command||x.action).filter(Boolean))].sort((a,b)=>auditCommand({command:a,action:a}).localeCompare(auditCommand({command:b,action:b}),'pt-BR')),f=A.auditFilters||(A.auditFilters={from:'',to:'',user:'',action:'',result:''});
+    const L=all.filter(x=>{const date=String(x.at||'').slice(0,10),res=auditResult(x),command=x.command||x.action;return (!f.from||date>=f.from)&&(!f.to||date<=f.to)&&(!f.user||x.user===f.user)&&(!f.action||command===f.action)&&(!f.result||res===f.result)&&(!q||[x.user,x.login,x.action,x.command,x.performed,auditCommand(x),x.target,x.detail,auditDescription(x),res].join(' ').toLowerCase().includes(q));}),display=groupNavigationRows(L),options=(items,selected)=>items.map(v=>'<option value="'+escA(v)+'" '+(v===selected?'selected':'')+'>'+escA(auditCommand({command:v,action:v}))+'</option>').join('');
+    const rows=display.map(x=>{const d=new Date(x.at),date=Number.isNaN(d.getTime())?'—':d.toLocaleDateString('pt-BR'),time=Number.isNaN(d.getTime())?'—':d.toLocaleTimeString('pt-BR'),result=auditResult(x),cls=result==='Concluído'?'ok':result==='Concluído parcialmente'?'partial':result==='Não concluído'?'bad':result==='Em andamento'?'running':'pending',desc=auditDescription(x);return '<tr><td data-label="Data">'+date+'</td><td data-label="Hora">'+time+'</td><td data-label="Usuário">'+escA(x.user||'Sistema')+'</td><td data-label="Comando"><b>'+escA(auditCommand(x))+'</b></td><td data-label="O que foi realizado">'+escA(auditPerformed(x))+'</td><td data-label="Status"><span class="ap-audit-status '+cls+'">'+escA(result)+'</span></td><td data-label="Detalhes"><details class="ap-audit-detail"><summary>Ver detalhes</summary>'+auditDetailHTML(x,result,desc)+'</details></td></tr>';}).join('');
+    return '<div class="ap-card ap-audit-card"><div class="ap-audit-intro"><div><strong>Atividades do Arquivo Digital</strong><p>Veja quem executou cada comando, o que foi realizado e o resultado. As ações de navegação repetidas em sequência são agrupadas apenas na visualização; nenhum registro é apagado.</p></div><span class="ap-muted">'+display.length+' linhas exibidas · '+L.length+' atividades encontradas</span></div>'+
+      '<div class="ap-audit-search"><input id="apSearch" placeholder="Pesquisar usuário, comando, documento ou atividade..." value="'+escA(A.search)+'"><button class="ap-btn ghost" data-auth="export-audit">Exportar registros</button></div>'+
+      '<div class="ap-audit-filters"><label>De<input type="date" id="apAuditFrom" value="'+escA(f.from)+'"></label><label>Até<input type="date" id="apAuditTo" value="'+escA(f.to)+'"></label><label>Usuário<select id="apAuditUser"><option value="">Todos os usuários</option>'+options(users,f.user)+'</select></label><label>Comando<select id="apFilter"><option value="">Todos os comandos</option>'+options(actions,f.action)+'</select></label><label>Status<select id="apAuditResult"><option value="">Todos os status</option>'+['Concluído','Concluído parcialmente','Não concluído','Solicitado','Em andamento','Registrado'].map(v=>'<option '+(f.result===v?'selected':'')+'>'+v+'</option>').join('')+'</select></label><button class="ap-btn ghost" data-auth="audit-clear">Limpar filtros</button></div>'+
+      '<div class="ap-table ap-audit-table"><table><thead><tr><th>Data</th><th>Hora</th><th>Usuário</th><th>Comando que foi feito</th><th>O que foi realizado</th><th>Status do comando</th><th>Detalhes</th></tr></thead><tbody>'+(rows||'<tr><td colspan="7" class="ap-audit-empty">Nenhuma atividade encontrada para os filtros informados.</td></tr>')+'</tbody></table></div>'+
+      '<p class="ap-audit-foot">Os registros são mantidos no banco local de auditoria. A exportação inclui o histórico completo, inclusive as atividades agrupadas nesta tela.</p></div>';
   }
   async function panelClick(e){const b=e.target.closest('[data-auth]');if(!b)return;const a=b.dataset.auth,id=b.dataset.id;
     if(a==='close'){$a('#arqAuthPanel').hidden=true;return;}if(a==='audit-clear'){A.search='';A.auditFilters={from:'',to:'',user:'',action:'',result:''};drawPanel();return;}if(a==='tab-users'){A.tab='users';drawPanel();return;}if(a==='tab-history'){A.tab='history';drawPanel();return;}if(a==='tab-audit'){A.tab='audit';drawPanel();return;}
