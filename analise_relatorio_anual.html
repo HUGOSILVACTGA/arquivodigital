@@ -238,7 +238,7 @@ function num(v){if(typeof v==='number')return Number.isFinite(v)?v:0;if(v===null
 function htmlSafe(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function getCell(row,i){return i>=0?row[i]:undefined;}
 function parseReportWorkbook(workbook){
- const monthOrder=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+ const monthOrder=['Novembro','Dezembro','Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro'];
  let found=null,opening=saldoInicial,year='';
  for(const sheetName of workbook.SheetNames){
   const ws=workbook.Sheets[sheetName],rows=window.XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
