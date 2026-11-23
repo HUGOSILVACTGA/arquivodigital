@@ -76,11 +76,21 @@ h1{font-size:21px;line-height:1.25;margin:0;font-weight:750}
 .table-toolbar{padding:16px 18px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .table-toolbar h3{font-size:13px;margin:0}
 .table-toolbar p{font-size:10.5px;color:var(--muted);margin:3px 0 0}
-.table-wrap{overflow:auto;border-top:1px solid var(--border)}
-table{width:100%;border-collapse:separate;border-spacing:0;min-width:850px}
-th,td{padding:12px 14px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}
-th{font-size:9.5px;letter-spacing:.38px;color:var(--muted);text-transform:uppercase;background:var(--surface2);font-weight:750}
-td{font-size:11.5px;font-variant-numeric:tabular-nums}
+.table-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.table-print-btn{display:inline-flex;align-items:center;gap:7px;padding:8px 12px;border:1px solid #3654e8;background:linear-gradient(135deg,#3654e8,#243bc9);color:#fff;border-radius:9px;font-family:inherit;font-size:11px;font-weight:700;line-height:1.2;cursor:pointer;box-shadow:0 3px 9px #283ed633;transition:transform .15s,box-shadow .15s}
+.table-print-btn:hover{transform:translateY(-1px);box-shadow:0 5px 13px #283ed644}
+.table-print-btn svg{width:15px;height:15px;flex:none}
+.table-wrap{overflow:visible;border-top:1px solid var(--border)}
+table{width:100%;table-layout:fixed;border-collapse:separate;border-spacing:0;min-width:0}
+th,td{padding:11px 9px;border-bottom:1px solid var(--border);text-align:right;white-space:normal;overflow-wrap:anywhere}
+th{font-size:clamp(8px,.72vw,10px);line-height:1.3;letter-spacing:.25px;color:var(--muted);text-transform:uppercase;background:var(--surface2);font-weight:750}
+td{font-size:clamp(9px,.82vw,11.5px);font-variant-numeric:tabular-nums;line-height:1.35}
+table th:nth-child(1),table td:nth-child(1){width:5%}
+table th:nth-child(2),table td:nth-child(2){width:17%}
+table th:nth-child(3),table td:nth-child(3){width:17%}
+table th:nth-child(4),table td:nth-child(4){width:17%}
+table th:nth-child(5),table td:nth-child(5){width:16%}
+table th:nth-child(6),table td:nth-child(6){width:28%}
 th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}
 tbody tr:hover{background:var(--surface2)}
 tbody tr:last-child td{border-bottom:0}
@@ -105,7 +115,21 @@ tbody tr:last-child td{border-bottom:0}
  .meta{margin-bottom:12px}.cards{gap:8px}.card{padding:12px 12px 11px;min-height:105px}.card-value{font-size:clamp(15px,4vw,19px);margin-top:9px}.card-label{font-size:9px}.card-note{font-size:9px}
  .opening-balance{padding:10px 12px}.section-head{margin-top:20px;align-items:flex-start;flex-direction:column;gap:3px}
  .chart-panel{padding:14px}.chart-wrap{height:260px}.chart-grid{gap:10px}.chart-grid .chart-wrap{height:250px}
- .table-toolbar{padding:14px}.insights{grid-template-columns:1fr}.foot{text-align:left}
+ .table-toolbar{padding:14px}.table-tools{width:100%;justify-content:space-between}.table-print-btn{flex:1;justify-content:center}.table-wrap{overflow:visible}
+ table{display:block;width:100%;table-layout:auto}
+ table thead{display:none}
+ table tbody{display:grid;gap:9px;padding:10px}
+ table tbody tr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 10px;padding:8px 10px;border:1px solid var(--border);border-radius:10px;background:var(--surface)}
+ table tbody tr td{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-width:0;width:auto!important;padding:7px 2px;border-bottom:1px solid var(--border);text-align:left!important;font-size:10px;overflow-wrap:anywhere}
+ table tbody tr td:before{content:attr(data-label);display:block;margin-bottom:3px;color:var(--muted);font-size:8px;font-weight:750;letter-spacing:.25px;text-transform:uppercase}
+ table tbody tr td:nth-child(1){display:none}
+ table tbody tr td:nth-child(2){grid-column:1/-1;font-size:12px;font-weight:800;border-bottom:1px solid var(--border)}
+ table tbody tr td:nth-child(2):before{content:"MÊS / REFERÊNCIA"}
+ table tbody tr td:last-child{color:var(--green);font-weight:800}
+ table tbody tr.initial-row,table tbody tr.total-row{background:var(--surface2)}
+ table tbody tr.total-row td{font-weight:800}
+ table tbody tr td:nth-child(2){color:var(--text)}
+ .insights{grid-template-columns:1fr}.foot{text-align:left}
 }
 @media(max-width:390px){.cards{grid-template-columns:1fr}.card{min-height:90px}.card-value{font-size:21px}}
 @media print{
@@ -162,7 +186,7 @@ tbody tr:last-child td{border-bottom:0}
 
  <div class="section-head"><h2 class="section-title">Detalhamento do relatório</h2><span class="section-note">Valores mensais e total geral</span></div>
  <section class="panel table-panel">
-  <div class="table-toolbar"><div><h3>Contas a receber e pagar — 2026/2027</h3><p>O saldo inicial é apresentado separadamente e não compõe os totais mensais.</p></div><span class="chart-tag">5 MESES + TOTAL</span></div>
+  <div class="table-toolbar"><div><h3>Contas a receber e pagar — 2026/2027</h3><p>O saldo inicial é apresentado separadamente e não compõe os totais mensais.</p></div><div class="table-tools"><span class="chart-tag">5 MESES + TOTAL</span><button class="table-print-btn" id="printTableBtn" type="button" aria-label="Imprimir somente a tabela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/><path d="M18 12h.01"/></svg> Imprimir tabela</button></div></div>
   <div class="table-wrap"><table>
    <thead><tr><th>Nº</th><th>Mês</th><th>Contas a receber</th><th>Contas a pagar</th><th>Pedido de compra</th><th>Diferença / saldo acumulado</th></tr></thead>
    <tbody>
@@ -210,6 +234,51 @@ function drawCharts(){
  charts.push(new Chart(document.getElementById('netChart'),{type:'bar',data:{labels,datasets:[{label:'Resultado do mês',data:resultado,backgroundColor:resultado.map(v=>v>=0?c.green:c.red),borderRadius:5,maxBarThickness:38}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:x=>money(x.raw)}}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{display:false}},y:{...axisOptions(c),ticks:{...axisOptions(c).ticks,callback:v=>(v/1000).toLocaleString('pt-BR',{maximumFractionDigits:0})+' mil'}}}}}));
  charts.push(new Chart(document.getElementById('balanceChart'),{type:'line',data:{labels,datasets:[{label:'Saldo acumulado',data:saldo,borderColor:c.green,backgroundColor:'rgba(46,158,100,.14)',fill:true,tension:.28,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:c.green,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:x=>money(x.raw)}}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{display:false}},y:{...axisOptions(c),beginAtZero:false,ticks:{...axisOptions(c).ticks,callback:v=>(v/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi'}}}}}));
 }
+
+function printOnlyTable(){
+ const table=document.querySelector('.table-panel table');
+ if(!table)return;
+ const w=window.open('','_blank');
+ if(!w){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para este site e tente novamente.');return;}
+ const doc=w.document;
+ doc.open();
+ doc.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detalhamento do Relatório Anual — 2026/2027</title>
+ <style>
+ @page{size:A4 landscape;margin:13mm}
+ *{box-sizing:border-box}
+ body{margin:0;background:#fff;color:#172033;font-family:Arial,Helvetica,sans-serif}
+ .sheet{width:100%;padding:0}
+ .heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding:0 0 16px;border-bottom:3px solid #283ED6;margin-bottom:20px}
+ .eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;color:#4056c8;text-transform:uppercase;margin-bottom:7px}
+ h1{font-size:25px;line-height:1.15;margin:0;color:#14213d}
+ .sub{font-size:12px;color:#5c6677;margin-top:6px}
+ .period{font-size:11px;font-weight:800;color:#283ED6;background:#eef1ff;border:1px solid #d9dfff;border-radius:8px;padding:9px 12px;white-space:nowrap}
+ .table-caption{font-size:12px;color:#667085;margin:0 0 12px}
+ table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;border:1px solid #d9deea;border-radius:10px;overflow:hidden}
+ th{background:#243bc9;color:#fff;font-size:12px;font-weight:800;letter-spacing:.25px;text-transform:uppercase;padding:15px 12px;text-align:right;line-height:1.25}
+ th:first-child,th:nth-child(2){text-align:left}
+ td{padding:16px 12px;border-bottom:1px solid #e2e6ef;text-align:right;font-size:14px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+ td:first-child,td:nth-child(2){text-align:left}
+ th:nth-child(1),td:nth-child(1){width:5%}th:nth-child(2),td:nth-child(2){width:17%}th:nth-child(3),td:nth-child(3){width:17%}th:nth-child(4),td:nth-child(4){width:17%}th:nth-child(5),td:nth-child(5){width:16%}th:nth-child(6),td:nth-child(6){width:28%}
+ tbody tr:nth-child(even):not(.total-row):not(.initial-row){background:#f7f8fc}
+ .month{font-weight:800;color:#172033}
+ .balance{color:#137a4b;font-weight:800}
+ .initial-row td{background:#f0f3fa;color:#566174;font-size:13px}
+ .initial-row td:last-child{color:#137a4b;font-weight:800}
+ .total-row td{background:#e9edff;color:#142b8b;font-size:14px;font-weight:900;border-top:2px solid #aebcff;border-bottom:0}
+ .total-row td:last-child{color:#137a4b}
+ .footer{margin-top:17px;padding-top:10px;border-top:1px solid #e2e6ef;display:flex;justify-content:space-between;color:#7b8494;font-size:10px}
+ @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+ </style></head><body><main class="sheet">
+ <header class="heading"><div><div class="eyebrow">Relatório financeiro · Exercício 2026/2027</div><h1>Detalhamento do Relatório Anual</h1><div class="sub">Contas a receber, contas a pagar e pedidos de compra</div></div><div class="period">NOVEMBRO — MARÇO<br>5 MESES ANALISADOS</div></header>
+ <p class="table-caption">Valores em reais (R$) · Saldo inicial apresentado separadamente · Total geral conforme planilha de referência</p>
+ ${table.outerHTML}
+ <footer class="footer"><span>Fonte: RELATÓRIO ANUAL — CONTAS A RECEBER E PAGAR</span><span>Documento para impressão</span></footer>
+ </main><script>window.onload=function(){window.focus();setTimeout(function(){window.print();},250);};<\/script></body></html>`);
+ doc.close();
+}
+document.getElementById('printTableBtn').addEventListener('click',printOnlyTable);
+
 document.getElementById('themeBtn').addEventListener('click',()=>{document.body.classList.toggle('light-theme');drawCharts();});
 window.addEventListener('chart-ready',drawCharts);
 window.addEventListener('chart-failed',showChartError);
