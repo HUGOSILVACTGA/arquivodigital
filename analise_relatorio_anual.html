@@ -234,10 +234,10 @@ let charts=[];
 
 
 function norm(v){return String(v??'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
-function monthName(v){const n=norm(v);const months=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return months.find(m=>n===m||n.startsWith(m+' '))||null;}
+function monthName(v){const n=norm(v);const months=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return months.find(m=>new RegExp('(^| )'+m+'( |$)').test(n))||null;}
 function num(v){if(typeof v==='number')return Number.isFinite(v)?v:0;if(v===null||v===undefined||v==='')return 0;let t=String(v).trim().replace(/R\$/gi,'').replace(/\s/g,'');if(t.includes(','))t=t.replace(/\./g,'').replace(',','.');const n=Number(t.replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0;}
 function htmlSafe(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-function parseBrazilianAmounts(line){const re=/(?:R\$\s*)?-?\d{1,3}(?:\.\d{3})*,\d{2}/g;return (line.match(re)||[]).map(num);}
+function parseBrazilianAmounts(line){const re=/(?:R\$\s*)?-?\d+(?:\.\d{3})*,\d{2}/g;return (line.match(re)||[]).map(num);}
 function loadPdfLibrary(){
  if(window.pdfjsLib)return Promise.resolve();
  if(window.__pdfPromise)return window.__pdfPromise;
