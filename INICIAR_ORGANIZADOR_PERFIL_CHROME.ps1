@@ -111,9 +111,11 @@ if ($null -eq $selected) {
 $uri = ([System.Uri]::new((Resolve-Path -LiteralPath $HtmlPath).Path)).AbsoluteUri
 $profileArgument = '--profile-directory="{0}"' -f $selected.Directory
 $uriArgument = '"{0}"' -f $uri
+# Solicita explicitamente uma janela maximizada do Windows (nao modo tela cheia/F11).
+# --start-maximized e interpretado pelo proprio Chrome, mesmo quando ele ja esta em execucao.
 Start-Process -FilePath $chrome -ArgumentList @(
     $profileArgument,
     "--new-window",
-    "--start-fullscreen",
+    "--start-maximized",
     $uriArgument
-) -WindowStyle Maximized
+)
