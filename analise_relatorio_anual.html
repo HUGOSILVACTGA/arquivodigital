@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Análise Anual | Contas a Receber e Pagar 2026/2027</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root{--primary:#283ED6;--primary2:#2E4CE0;--bg:#0A1626;--surface:#0F2036;--surface2:#152B46;--border:#33404B;--text:#EEF2F5;--muted:#8D98A3;--green:#2E9E64;--red:#D64545;--orange:#DB8B2B;--shadow:0 6px 18px rgba(0,0,0,.22)}
+body.light{--bg:#F4F6FC;--surface:#fff;--surface2:#F1F4FA;--border:#DFE4ED;--text:#16232E;--muted:#64717D;--shadow:0 6px 20px rgba(16,24,40,.07)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}.app{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:245px;background:linear-gradient(180deg,#2E4CE0,#243BC9 48%,#141F63);padding:24px 15px;color:#fff;display:flex;flex-direction:column;z-index:3}.brand{font-size:16px;font-weight:750;padding:0 10px 22px;border-bottom:1px solid #ffffff30}.brand small{display:block;font-size:11px;font-weight:400;color:#ffffffa8;margin-top:6px}.nav{margin-top:20px;padding:11px 13px;border-radius:9px;background:#ffffff;color:#283ED6;font-weight:700}.nav-foot{margin-top:auto;padding:14px;background:#0002;border-radius:10px;color:#ffffffa8;font-size:11px}.main{margin-left:245px;padding:0 30px 40px;max-width:1800px}.topbar{margin:0 -30px 22px;padding:19px 30px;background:linear-gradient(90deg,#1B2A9E,#283ED6);color:white;display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;box-shadow:var(--shadow)}h1{font-size:21px;margin:0}.subtitle{font-size:12px;color:#ffffffc9;margin-top:3px}.actions{display:flex;gap:8px}.btn{border:1px solid #ffffff55;background:#ffffff18;color:white;border-radius:9px;padding:8px 12px;cursor:pointer;font-weight:650}.btn:hover{background:#ffffff30}.section-title{font-size:15px;font-weight:750;margin:23px 0 12px}.meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}.pill{background:var(--surface2);border:1px solid var(--border);color:var(--muted);padding:6px 10px;border-radius:8px;font-size:11px}.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px}.card,.panel{background:var(--surface);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}.card{padding:17px 18px;min-height:116px}.card-label{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.35px;text-transform:uppercase}.card-value{font-size:clamp(19px,2vw,26px);font-weight:800;letter-spacing:-.5px;margin-top:9px;white-space:nowrap}.card-note{font-size:11px;color:var(--muted);margin-top:5px}.blue{color:#6D91FF}.green{color:#39C982}.red{color:#F07878}.orange{color:#E9A64B}.grid{display:grid;grid-template-columns:1.2fr 1fr;gap:14px}.panel{padding:18px;min-width:0}.panel h2{font-size:14px;margin:0 0 3px}.panel p{font-size:11px;color:var(--muted);margin:0 0 14px}.chart-wrap{height:285px;position:relative}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:700px}th,td{padding:12px 13px;border-bottom:1px solid var(--border);text-align:right;white-space:nowrap}th{font-size:10px;letter-spacing:.35px;color:var(--muted);text-transform:uppercase;background:var(--surface2)}td{font-size:12px;font-variant-numeric:tabular-nums}th:first-child,td:first-child,th:nth-child(2),td:nth-child(2){text-align:left}.month{font-weight:700}.total-row td{font-weight:800;background:var(--surface2)}.balance{color:#39C982;font-weight:800}.insights{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.insight{padding:15px;background:var(--surface2);border:1px solid var(--border);border-radius:11px}.insight b{display:block;margin-bottom:5px;font-size:12px}.insight span{font-size:11px;color:var(--muted)}.foot{font-size:10px;color:var(--muted);text-align:right;margin-top:20px;padding-top:12px;border-top:1px solid var(--border)}@media(max-width:1050px){.cards{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.insights{grid-template-columns:1fr 1fr}}@media(max-width:700px){.sidebar{position:static;width:auto;height:auto;padding:14px 18px}.brand{padding:0 0 10px;border:0}.nav,.nav-foot{display:none}.main{margin:0;padding:0 13px 25px}.topbar{margin:0 -13px 16px;padding:16px 15px}.cards{grid-template-columns:1fr 1fr;gap:8px}.card{padding:13px;min-height:105px}.card-value{font-size:17px}.insights{grid-template-columns:1fr}.chart-wrap{height:250px}.section-title{margin-top:18px}}@media print{.sidebar,.actions{display:none}.main{margin:0;padding:0}.topbar{margin:0 0 15px;print-color-adjust:exact}.card,.panel{box-shadow:none;break-inside:avoid}body{background:#fff;color:#111}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar"><div class="brand">PAINEL DE ANÁLISE<small>CONTAS A RECEBER E PAGAR</small></div><div class="nav">▦　Visão geral anual</div><div class="nav-foot">RELATÓRIO ANUAL<br><b>Exercício 2026/2027</b><br><br>Dados transcritos da planilha de referência.</div></aside>
+<main class="main">
+<header class="topbar"><div><h1>Relatório Anual — Contas a Receber e Pagar</h1><div class="subtitle">Análise gerencial do exercício 2026/2027 · Novembro a Março</div></div><div class="actions"><button class="btn" id="theme">☼ Tema</button><button class="btn" onclick="window.print()">⇩ Imprimir / PDF</button></div></header>
+<div class="meta"><span class="pill">EXERCÍCIO 2026/2027</span><span class="pill">PERÍODO: NOVEMBRO A MARÇO</span><span class="pill">5 MESES ANALISADOS</span></div>
+<div class="cards">
+<div class="card"><div class="card-label">Saldo final acumulado</div><div class="card-value green">R$ 1.578.519,17</div><div class="card-note">Posição ao final de março</div></div>
+<div class="card"><div class="card-label">Total a receber</div><div class="card-value blue">R$ 7.433.202,85</div><div class="card-note">Receitas previstas no período</div></div>
+<div class="card"><div class="card-label">Total a pagar</div><div class="card-value red">R$ 4.990.947,56</div><div class="card-note">Despesas e compromissos</div></div>
+<div class="card"><div class="card-label">Pedidos de compra</div><div class="card-value orange">R$ 911.691,55</div><div class="card-note">Valores de pedidos registrados</div></div>
+</div>
+<div class="section-title">Movimentação financeira mensal</div>
+<div class="grid">
+<section class="panel"><h2>Recebimentos x pagamentos x pedidos</h2><p>Comparativo dos valores informados para cada mês</p><div class="chart-wrap"><canvas id="movement"></canvas></div></section>
+<section class="panel"><h2>Evolução do saldo acumulado</h2><p>Saldo inicial em caixa e diferença acumulada mês a mês</p><div class="chart-wrap"><canvas id="balance"></canvas></div></section>
+</div>
+<div class="section-title">Detalhamento do relatório</div>
+<section class="panel"><div class="table-wrap"><table><thead><tr><th>Nº</th><th>Mês</th><th>Contas a receber</th><th>Contas a pagar</th><th>Pedido de compra</th><th>Diferença / saldo</th></tr></thead><tbody>
+<tr><td>—</td><td class="month">Valor em caixa</td><td>—</td><td>—</td><td>—</td><td class="balance">R$ 47.955,43</td></tr>
+<tr><td>1</td><td class="month">Novembro</td><td>R$ 1.702.567,01</td><td>R$ 1.258.887,39</td><td>—</td><td class="balance">R$ 491.635,05</td></tr>
+<tr><td>2</td><td class="month">Dezembro</td><td>R$ 4.230.551,57</td><td>R$ 2.477.748,82</td><td>R$ 256.767,56</td><td class="balance">R$ 1.987.670,24</td></tr>
+<tr><td>3</td><td class="month">Janeiro</td><td>R$ 1.183.220,02</td><td>R$ 829.923,74</td><td>R$ 421.351,50</td><td class="balance">R$ 1.919.615,02</td></tr>
+<tr><td>4</td><td class="month">Fevereiro</td><td>R$ 292.650,52</td><td>R$ 289.368,97</td><td>R$ 160.835,83</td><td class="balance">R$ 1.762.060,74</td></tr>
+<tr><td>5</td><td class="month">Março</td><td>R$ 24.213,73</td><td>R$ 135.018,64</td><td>R$ 72.736,66</td><td class="balance">R$ 1.578.519,17</td></tr>
+<tr class="total-row"><td>—</td><td class="month">Total geral</td><td>R$ 7.433.202,85</td><td>R$ 4.990.947,56</td><td>R$ 911.691,55</td><td class="balance">R$ 1.578.519,17</td></tr>
+</tbody></table></div></section>
+<div class="section-title">Leituras rápidas</div>
+<div class="insights">
+<div class="insight"><b>Maior volume de recebimentos</b><span>Dezembro concentra R$ 4.230.551,57, o maior valor mensal a receber.</span></div>
+<div class="insight"><b>Maior volume de pagamentos</b><span>Dezembro também apresenta o maior total a pagar: R$ 2.477.748,82.</span></div>
+<div class="insight"><b>Saldo final positivo</b><span>O período termina com diferença acumulada de R$ 1.578.519,17, partindo de R$ 47.955,43 em caixa.</span></div>
+</div>
+<div class="foot">Fonte: planilha RELATÓRIO ANUAL — CONTAS A RECEBER E PAGAR · Exercício 2026/2027</div>
+</main></div>
+<script>
+const labels=['Novembro','Dezembro','Janeiro','Fevereiro','Março'];
+const receb=[1702567.01,4230551.57,1183220.02,292650.52,24213.73];
+const pagar=[1258887.39,2477748.82,829923.74,289368.97,135018.64];
+const pedidos=[0,256767.56,421351.50,160835.83,72736.66];
+const saldo=[491635.05,1987670.24,1919615.02,1762060.74,1578519.17];
+const brl=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:2}).format(v);
+let charts=[];
+function draw(){
+ charts.forEach(c=>c.destroy());charts=[];
+ const light=document.body.classList.contains('light');
+ const tick=light?'#64717D':'#8D98A3',grid=light?'#E5E9F0':'#26394E';
+ charts.push(new Chart(document.getElementById('movement'),{type:'bar',data:{labels,datasets:[{label:'A receber',data:receb,backgroundColor:'#4773F5',borderRadius:5},{label:'A pagar',data:pagar,backgroundColor:'#D95C64',borderRadius:5},{label:'Pedidos de compra',data:pedidos,backgroundColor:'#DB9A3B',borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick,boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+brl(c.raw)}}},scales:{x:{ticks:{color:tick},grid:{display:false}},y:{ticks:{color:tick,callback:v=>(v/1000000).toFixed(1)+' mi'},grid:{color:grid}}}}}));
+ charts.push(new Chart(document.getElementById('balance'),{type:'line',data:{labels,datasets:[{label:'Saldo acumulado',data:saldo,borderColor:'#2E9E64',backgroundColor:'rgba(46,158,100,.15)',fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#2E9E64'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:tick,boxWidth:10,font:{size:10}}},tooltip:{callbacks:{label:c=>brl(c.raw)}}},scales:{x:{ticks:{color:tick},grid:{display:false}},y:{ticks:{color:tick,callback:v=>(v/1000000).toFixed(1)+' mi'},grid:{color:grid}}}}}));
+}
+document.getElementById('theme').addEventListener('click',()=>{document.body.classList.toggle('light');draw()});
+if(window.Chart)draw();else document.querySelectorAll('.chart-wrap').forEach(el=>el.innerHTML='<p>Não foi possível carregar os gráficos. Verifique a conexão com a internet.</p>');
+</script>
+</body></html>
