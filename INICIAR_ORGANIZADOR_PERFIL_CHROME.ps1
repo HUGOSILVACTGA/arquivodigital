@@ -107,15 +107,16 @@ if ($null -eq $selected) {
     Set-Content -LiteralPath $configPath -Value $selected.Directory -Encoding ASCII
 }
 
-# Abre o HTML solicitado usando o mesmo perfil memorizado do Chrome.
+# Abre o HTML solicitado em tela cheia, equivalente ao F11 do Chrome.
 $uri = ([System.Uri]::new((Resolve-Path -LiteralPath $HtmlPath).Path)).AbsoluteUri
 $profileArgument = '--profile-directory="{0}"' -f $selected.Directory
 $uriArgument = '"{0}"' -f $uri
-# Solicita explicitamente uma janela maximizada do Windows (nao modo tela cheia/F11).
-# --start-maximized e interpretado pelo proprio Chrome, mesmo quando ele ja esta em execucao.
+
+# --start-fullscreen inicia o Chrome em tela cheia (sem abas e barra de endereco).
+# Os dois atalhos usam este mesmo inicializador e recebem o mesmo comportamento.
 Start-Process -FilePath $chrome -ArgumentList @(
     $profileArgument,
     "--new-window",
-    "--start-maximized",
+    "--start-fullscreen",
     $uriArgument
 )
