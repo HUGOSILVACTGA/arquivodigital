@@ -235,6 +235,14 @@ function drawCharts(){
  charts.push(new Chart(document.getElementById('balanceChart'),{type:'line',data:{labels,datasets:[{label:'Saldo acumulado',data:saldo,borderColor:c.green,backgroundColor:'rgba(46,158,100,.14)',fill:true,tension:.28,pointRadius:4,pointHoverRadius:6,pointBackgroundColor:c.green,borderWidth:2.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:x=>money(x.raw)}}},scales:{x:{ticks:{color:c.tick,font:{size:10}},grid:{display:false}},y:{...axisOptions(c),beginAtZero:false,ticks:{...axisOptions(c).ticks,callback:v=>(v/1000000).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi'}}}}}));
 }
 
+(function labelResponsiveTable(){
+ const table=document.querySelector('.table-panel table');
+ if(!table)return;
+ const labels=Array.from(table.querySelectorAll('thead th')).map(th=>th.textContent.trim());
+ table.querySelectorAll('tbody tr').forEach(row=>{
+  Array.from(row.cells).forEach((cell,index)=>{cell.setAttribute('data-label',labels[index]||'');});
+ });
+})();
 function printOnlyTable(){
  const table=document.querySelector('.table-panel table');
  if(!table)return;
