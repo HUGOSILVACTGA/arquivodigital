@@ -143,6 +143,10 @@ tbody tr:last-child td{border-bottom:0}
  .section-head{margin:15px 0 8px}.table-wrap{overflow:visible}table{min-width:0}th,td{padding:7px 8px;font-size:9px}
  .chart-grid{grid-template-columns:1fr 1fr}.insights{grid-template-columns:repeat(3,1fr)}
 }
+
+.import-panel{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin:0 0 18px;padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow)}
+.import-copy{min-width:220px;flex:1}.import-title{font-size:12px;font-weight:800}.import-help{font-size:10.5px;color:var(--muted);margin-top:3px}.import-controls{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.import-btn{border:1px solid #3654e8;background:linear-gradient(135deg,#3654e8,#243bc9);color:#fff;border-radius:9px;padding:9px 13px;font:700 11px inherit;cursor:pointer}.import-btn.secondary{background:var(--surface2);color:var(--text);border-color:var(--border)}.import-btn:disabled{opacity:.45;cursor:not-allowed}.import-file-name{font-size:10px;color:var(--muted);max-width:210px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.import-status{width:100%;font-size:10.5px;color:var(--muted);margin-top:1px}.import-status.success{color:var(--green)}.import-status.error{color:var(--red)}
+@media(max-width:760px){.import-panel{align-items:flex-start;padding:12px}.import-controls{width:100%}.import-btn{flex:1}.import-file-name{max-width:100%;width:100%}}
 </style>
 </head>
 <body>
@@ -157,6 +161,12 @@ tbody tr:last-child td{border-bottom:0}
   <div><h1>Relatório Anual — Contas a Receber e Pagar</h1><div class="subtitle">Visão gerencial do exercício 2026/2027 · Novembro a Março</div></div>
   <div class="actions"><button class="btn" id="themeBtn" type="button">☼　Alternar tema</button><button class="btn" type="button" onclick="window.print()">⇩　Imprimir / PDF</button></div>
  </header>
+ 
+ <section class="import-panel" aria-label="Atualização dos dados do relatório">
+  <div class="import-copy"><div class="import-title">Atualizar relatório com uma nova planilha</div><div class="import-help">Selecione o arquivo Excel (.xlsx ou .xls) ou CSV com os dados atualizados. Depois, clique em Atualizar dados.</div></div>
+  <div class="import-controls"><input id="reportFileInput" type="file" accept=".xlsx,.xls,.csv" hidden><button class="import-btn secondary" id="selectReportBtn" type="button">▣ Selecionar arquivo</button><span class="import-file-name" id="reportFileName">Nenhum arquivo selecionado</span><button class="import-btn" id="importReportBtn" type="button" disabled>↻ Atualizar dados</button></div>
+  <div class="import-status" id="importStatus" role="status" aria-live="polite">O relatório atual permanece carregado até que uma nova planilha seja importada.</div>
+ </section>
  <div class="meta"><span class="pill">EXERCÍCIO 2026/2027</span><span class="pill">5 MESES ANALISADOS</span><span class="pill">VALORES EM REAIS (R$)</span></div>
 
  <div class="section-head"><h2 class="section-title">Resumo financeiro</h2><span class="section-note">Consolidado do período</span></div>
@@ -211,14 +221,148 @@ tbody tr:last-child td{border-bottom:0}
 </main>
 </div>
 <script>
-const labels=['Novembro','Dezembro','Janeiro','Fevereiro','Março'];
-const receber=[1702567.01,4230551.57,1183220.02,292650.52,24213.73];
-const pagar=[1258887.39,2477748.82,829923.74,289368.97,135018.64];
-const pedidos=[0,256767.56,421351.50,160835.83,72736.66];
-const saldo=[491635.05,1987670.24,1919615.02,1762060.74,1578519.17];
-const resultado=[443679.62,1496035.19,-68055.22,-157554.28,-183541.57];
+let labels=['Novembro','Dezembro','Janeiro','Fevereiro','Março'];
+let receber=[1702567.01,4230551.57,1183220.02,292650.52,24213.73];
+let pagar=[1258887.39,2477748.82,829923.74,289368.97,135018.64];
+let pedidos=[0,256767.56,421351.50,160835.83,72736.66];
+let saldo=[491635.05,1987670.24,1919615.02,1762060.74,1578519.17];
+let resultado=[443679.62,1496035.19,-68055.22,-157554.28,-183541.57];
+let saldoInicial=47955.43;
+let exercicio='2026/2027';
 const money=v=>new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL'}).format(v);
 let charts=[];
+
+function norm(v){return String(v??'').normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
+function monthName(v){const n=norm(v);const months=['janeiro','fevereiro','marco','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];return months.find(m=>n===m||n.startsWith(m+' '))||null;}
+function num(v){if(typeof v==='number')return Number.isFinite(v)?v:0;if(v===null||v===undefined||v==='')return 0;let t=String(v).trim().replace(/R\\$/gi,'').replace(/\\s/g,'');if(t.includes(','))t=t.replace(/\\./g,'').replace(',','.');else if((t.match(/\\./g)||[]).length>1)t=t.replace(/\\./g,'');const n=Number(t.replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0;}
+function htmlSafe(v){return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function getCell(row,i){return i>=0?row[i]:undefined;}
+function parseReportWorkbook(workbook){
+ const monthOrder=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+ let found=null,opening=saldoInicial,year='';
+ for(const sheetName of workbook.SheetNames){
+  const ws=workbook.Sheets[sheetName],rows=window.XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:null});
+  const allText=rows.flat().map(v=>String(v??'')).join(' ');
+  const ym=allText.match(/20\\d{2}\\s*[\\/-]\\s*20\\d{2}/);if(ym)year=ym[0].replace(/\\s/g,'').replace('-','/');
+  for(let r=0;r<rows.length;r++){
+   for(let c=0;c<rows[r].length;c++){
+    const t=norm(rows[r][c]);
+    if(t.includes('saldo inicial')||t.includes('saldo em caixa inicial')){
+     const vals=rows[r].slice(c+1).concat(rows[r+1]||[]).filter(v=>typeof v==='number'||(typeof v==='string'&&/[0-9]/.test(v)));
+     if(vals.length)opening=num(vals[0]);
+    }
+   }
+  }
+  // Layout tabular: uma linha por mês e colunas para cada tipo de movimento.
+  for(let r=0;r<Math.min(rows.length,150);r++){
+   const h=rows[r].map(norm);
+   const mi=h.findIndex(x=>x==='mes'||x==='mês'||x.includes('referencia')||x.includes('periodo'));
+   const ri=h.findIndex(x=>x.includes('receber'));
+   const pi=h.findIndex(x=>x.includes('pagar'));
+   const ci=h.findIndex(x=>x.includes('pedido')&&x.includes('compra'));
+   if(ri>=0&&pi>=0&&ci>=0){
+    const monthIdx=mi>=0?mi:h.findIndex(x=>x==='mes');
+    const items=[];
+    for(let rr=r+1;rr<rows.length;rr++){
+     const row=rows[rr],mn=monthName(getCell(row,monthIdx>=0?monthIdx:0));
+     if(!mn)continue;
+     items.push({month:monthOrder.find(x=>norm(x)===mn)||mn,receive:num(getCell(row,ri)),pay:num(getCell(row,pi)),purchase:num(getCell(row,ci))});
+    }
+    if(items.length){found=items;break;}
+   }
+  }
+  if(found)break;
+  // Layout cruzado: meses nas colunas e tipos de movimento nas linhas.
+  let header=-1,monthCols=[];
+  for(let r=0;r<Math.min(rows.length,100);r++){
+   const cols=[];rows[r].forEach((v,c)=>{const m=monthName(v);if(m)cols.push({c,m});});
+   if(cols.length>=2){header=r;monthCols=cols;break;}
+  }
+  if(header>=0){
+   const data={};for(const m of monthCols)data[m.m]={month:monthOrder.find(x=>norm(x)===m.m)||m.m,receive:null,pay:null,purchase:null};
+   for(let r=header+1;r<rows.length;r++){
+    const row=rows[r],label=norm(row.slice(0,Math.min(4,row.length)).join(' '));
+    let key=label.includes('receber')?'receive':label.includes('pagar')?'pay':(label.includes('pedido')||label.includes('compra'))?'purchase':null;
+    if(!key)continue;
+    monthCols.forEach(m=>{data[m.m][key]=num(row[m.c]);});
+   }
+   const items=Object.values(data).filter(x=>x.receive!==null||x.pay!==null||x.purchase!==null);
+   if(items.length){found=items.map(x=>({month:x.month,receive:x.receive||0,pay:x.pay||0,purchase:x.purchase||0}));break;}
+  }
+ }
+ if(!found||!found.length)throw new Error('Não localizei a estrutura mensal. A planilha precisa conter os meses e as colunas/linhas Contas a receber, Contas a pagar e Pedido de compra.');
+ const ordered=found.sort((a,b)=>monthOrder.indexOf(a.month)-monthOrder.indexOf(b.month));
+ return {items:ordered,opening,year};
+}
+function setImportStatus(message,type=''){const el=document.getElementById('importStatus');el.textContent=message;el.className='import-status '+type;}
+function loadXlsxLibrary(){
+ if(window.XLSX)return Promise.resolve();
+ if(window.__xlsxPromise)return window.__xlsxPromise;
+ window.__xlsxPromise=new Promise((resolve,reject)=>{
+  const sources=['./vendor/xlsx.full.min.js','https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'];
+  const next=i=>{if(i>=sources.length){reject(new Error('Não foi possível carregar o leitor de planilhas. Verifique a conexão com a internet ou disponibilize vendor/xlsx.full.min.js.'));return;}const sc=document.createElement('script');sc.src=sources[i];sc.onload=()=>window.XLSX?resolve():next(i+1);sc.onerror=()=>next(i+1);document.head.appendChild(sc);};next(0);
+ });
+ return window.__xlsxPromise;
+}
+function updateReport(data,fileName){
+ labels=data.items.map(x=>x.month);
+ receber=data.items.map(x=>x.receive);pagar=data.items.map(x=>x.pay);pedidos=data.items.map(x=>x.purchase);
+ saldoInicial=data.opening;
+ resultado=labels.map((_,i)=>receber[i]-pagar[i]-pedidos[i]);
+ let running=saldoInicial;saldo=labels.map((_,i)=>(running+=resultado[i]));
+ const total=(arr)=>arr.reduce((a,b)=>a+b,0);
+ const totalRec=total(receber),totalPay=total(pagar),totalBuy=total(pedidos),finalBalance=saldo.at(-1)??saldoInicial;
+ if(data.year)exercicio=data.year;
+ const cards=document.querySelectorAll('.cards .card');
+ [finalBalance,totalRec,totalPay,totalBuy].forEach((v,i)=>cards[i].querySelector('.card-value').textContent=money(v));
+ cards[0].querySelector('.card-note').textContent='Posição ao final de '+labels.at(-1);
+ cards[1].querySelector('.card-note').textContent='Recebimentos previstos no período';
+ cards[2].querySelector('.card-note').textContent='Compromissos registrados';
+ cards[3].querySelector('.card-note').textContent='Pedidos registrados no período';
+ document.querySelector('.opening-balance strong').textContent=money(saldoInicial);
+ const tbody=document.querySelector('.table-panel tbody');
+ tbody.innerHTML='<tr class="initial-row"><td>—</td><td class="month">Saldo inicial em caixa</td><td>—</td><td>—</td><td>—</td><td>'+money(saldoInicial)+'</td></tr>'+
+ data.items.map((x,i)=>'<tr><td>'+(i+1)+'</td><td class="month">'+htmlSafe(x.month)+'</td><td>'+money(x.receive)+'</td><td>'+money(x.pay)+'</td><td>'+(x.purchase?money(x.purchase):'—')+'</td><td class="balance">'+money(saldo[i])+'</td></tr>').join('')+
+ '<tr class="total-row"><td>—</td><td class="month">Total geral</td><td>'+money(totalRec)+'</td><td>'+money(totalPay)+'</td><td>'+money(totalBuy)+'</td><td>'+money(finalBalance)+'</td></tr>';
+ document.querySelectorAll('.table-panel .table-toolbar h3').forEach(el=>el.textContent='Contas a receber e pagar — '+exercicio);
+ document.querySelector('.table-toolbar p').textContent='O saldo inicial é apresentado separadamente e não compõe os totais mensais.';
+ const meta=document.querySelector('.meta');meta.innerHTML='<span class="pill">EXERCÍCIO '+htmlSafe(exercicio)+'</span><span class="pill">'+labels.length+' MESES ANALISADOS</span><span class="pill">VALORES EM REAIS (R$)</span>';
+ const first=labels[0],last=labels.at(-1);
+ document.querySelector('.subtitle').textContent='Visão gerencial do exercício '+exercicio+' · '+first+' a '+last;
+ document.querySelector('.nav-foot').innerHTML='EXERCÍCIO<br><b>'+htmlSafe(exercicio)+'</b><br><br>Período analisado<br><b>'+htmlSafe(first)+' a '+htmlSafe(last)+'</b>';
+ const topRec=data.items.reduce((a,b)=>b.receive>a.receive?b:a,data.items[0]);
+ const topPay=data.items.reduce((a,b)=>b.pay>a.pay?b:a,data.items[0]);
+ const insights=document.querySelectorAll('.insight');
+ insights[0].querySelector('strong').textContent=topRec.month+' · '+money(topRec.receive);
+ insights[0].querySelector('p').textContent=topRec.month+' concentra o maior valor mensal previsto em contas a receber.';
+ insights[1].querySelector('strong').textContent=topPay.month+' · '+money(topPay.pay);
+ insights[1].querySelector('p').textContent='O maior volume de compromissos está concentrado em '+topPay.month+'.';
+ insights[2].querySelector('strong').textContent=last+' · '+money(finalBalance);
+ insights[2].querySelector('p').textContent=finalBalance>=0?'O saldo acumulado permanece positivo ao final do período.':'O saldo acumulado termina negativo ao final do período.';
+ const table=document.querySelector('.table-panel table'),ths=[...table.querySelectorAll('thead th')].map(x=>x.textContent.trim());
+ tbody.querySelectorAll('tr').forEach(row=>[...row.cells].forEach((cell,i)=>cell.setAttribute('data-label',ths[i]||'')));
+ const tag=document.querySelector('.table-tools .chart-tag');if(tag)tag.textContent=labels.length+' MESES + TOTAL';
+ document.querySelector('.foot').textContent='Fonte: '+fileName+' · Exercício '+exercicio;
+ drawCharts();
+}
+async function importReport(){
+ const input=document.getElementById('reportFileInput'),file=input.files?.[0];if(!file)return;
+ const btn=document.getElementById('importReportBtn');btn.disabled=true;btn.textContent='Lendo planilha…';
+ try{
+  await loadXlsxLibrary();
+  const ext=file.name.split('.').pop().toLowerCase();
+  if(!['xlsx','xls','csv'].includes(ext))throw new Error('Formato não suportado. Selecione um arquivo Excel ou CSV.');
+  const buffer=await file.arrayBuffer();
+  const wb=window.XLSX.read(buffer,{type:'array',raw:true});
+  const data=parseReportWorkbook(wb);
+  updateReport(data,file.name);
+  setImportStatus('Dados atualizados com sucesso a partir de "'+file.name+'". Foram identificados '+data.items.length+' meses.','success');
+ }catch(err){setImportStatus(err.message||'Não foi possível atualizar os dados.','error');}
+ finally{btn.disabled=false;btn.textContent='↻ Atualizar dados';}
+}
+document.getElementById('selectReportBtn').addEventListener('click',()=>document.getElementById('reportFileInput').click());
+document.getElementById('reportFileInput').addEventListener('change',e=>{const file=e.target.files?.[0];document.getElementById('reportFileName').textContent=file?file.name:'Nenhum arquivo selecionado';document.getElementById('importReportBtn').disabled=!file;if(file)setImportStatus('Arquivo selecionado. Clique em "Atualizar dados" para processar.');});
+document.getElementById('importReportBtn').addEventListener('click',importReport);
 function chartColors(){const light=document.body.classList.contains('light-theme');return{tick:light?'#64717D':'#8D98A3',grid:light?'#E5E9F0':'#26394E',blue:'#4773F5',red:'#D95C64',orange:'#DB9A3B',green:'#2E9E64'};}
 function axisOptions(c){return{ticks:{color:c.tick,font:{size:10}},grid:{color:c.grid}};}
 function destroyCharts(){charts.forEach(c=>c.destroy());charts=[];}
