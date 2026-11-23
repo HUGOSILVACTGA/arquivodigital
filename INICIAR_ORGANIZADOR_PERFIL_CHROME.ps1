@@ -107,16 +107,29 @@ if ($null -eq $selected) {
     Set-Content -LiteralPath $configPath -Value $selected.Directory -Encoding ASCII
 }
 
-# Abre o HTML solicitado em tela cheia, equivalente ao F11 do Chrome.
+# Abre o HTML em uma nova janela e envia F11 ao Chrome.
+# O envio da tecla reproduz o atalho real do navegador, sem depender de
+# --start-fullscreen ou --start-maximized.
 $uri = ([System.Uri]::new((Resolve-Path -LiteralPath $HtmlPath).Path)).AbsoluteUri
 $profileArgument = '--profile-directory="{0}"' -f $selected.Directory
 $uriArgument = '"{0}"' -f $uri
 
-# --start-fullscreen inicia o Chrome em tela cheia (sem abas e barra de endereco).
-# Os dois atalhos usam este mesmo inicializador e recebem o mesmo comportamento.
 Start-Process -FilePath $chrome -ArgumentList @(
     $profileArgument,
     "--new-window",
-    "--start-fullscreen",
     $uriArgument
 )
+
+# Aguarda a nova janela assumir o foco antes de enviar F11.
+Start-Sleep -Seconds 3
+try {
+    $shell = New-Object -ComObject WScript.Shell
+    [void]$shell.AppActivate("Google Chrome")
+    Start-Sleep -Milliseconds 500
+    $shell.SendKeys("{F11}")
+} catch {
+    [System.Windows.Forms.MessageBox]::Show(
+        "O sistema foi aberto, mas nao foi possivel ativar a tela cheia automaticamente. Clique na janela do Chrome e pressione F11.",
+        $windowTitle
+    ) | Out-Null
+}
