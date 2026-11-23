@@ -1,12 +1,15 @@
 param(
     [string]$HtmlPath,
-    [switch]$ChooseProfile
+    [switch]$ChooseProfile,
+    [string]$AppName = "Arquivo Digital"
 )
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
 
 $ErrorActionPreference = "Stop"
+$windowTitle = "$AppName - Inicializador"
+
 $chrome = Join-Path $env:ProgramFiles "Google\Chrome\Application\chrome.exe"
 if (-not (Test-Path $chrome)) {
     $chrome = Join-Path ${env:ProgramFiles(x86)} "Google\Chrome\Application\chrome.exe"
@@ -15,19 +18,20 @@ if (-not (Test-Path $chrome)) {
     $chrome = Join-Path $env:LOCALAPPDATA "Google\Chrome\Application\chrome.exe"
 }
 if (-not (Test-Path $chrome)) {
-    [System.Windows.Forms.MessageBox]::Show("Google Chrome nao foi encontrado neste computador.", "Organizador Hillo") | Out-Null
+    [System.Windows.Forms.MessageBox]::Show("Google Chrome nao foi encontrado neste computador.", $windowTitle) | Out-Null
     exit 1
 }
 
-if (-not (Test-Path -LiteralPath $HtmlPath)) {
-    [System.Windows.Forms.MessageBox]::Show("Nao encontrei o arquivo HTML:`r`n$HtmlPath`r`n`r`nDeixe o inicializador e o Organizador na mesma pasta.", "Organizador Hillo") | Out-Null
+if ([string]::IsNullOrWhiteSpace($HtmlPath) -or -not (Test-Path -LiteralPath $HtmlPath)) {
+    $message = "Nao encontrei o arquivo HTML:" + [Environment]::NewLine + $HtmlPath + [Environment]::NewLine + [Environment]::NewLine + "Confira se o arquivo HTML esta na mesma pasta do inicializador."
+    [System.Windows.Forms.MessageBox]::Show($message, $windowTitle) | Out-Null
     exit 1
 }
 
 $userData = Join-Path $env:LOCALAPPDATA "Google\Chrome\User Data"
 $localState = Join-Path $userData "Local State"
 if (-not (Test-Path $localState)) {
-    [System.Windows.Forms.MessageBox]::Show("Nao encontrei os perfis habituais do Chrome neste usuario do Windows.", "Organizador Hillo") | Out-Null
+    [System.Windows.Forms.MessageBox]::Show("Nao encontrei os perfis habituais do Chrome neste usuario do Windows.", $windowTitle) | Out-Null
     exit 1
 }
 
@@ -43,10 +47,12 @@ try {
     }
     if ($profiles.Count -eq 0) { throw "Nenhum perfil foi encontrado." }
 } catch {
-    [System.Windows.Forms.MessageBox]::Show("Nao foi possivel ler os perfis do Chrome: $($_.Exception.Message)", "Organizador Hillo") | Out-Null
+    [System.Windows.Forms.MessageBox]::Show("Nao foi possivel ler os perfis do Chrome: $($_.Exception.Message)", $windowTitle) | Out-Null
     exit 1
 }
 
+# Mantem o arquivo de preferencia existente para preservar o perfil ja escolhido.
+# Os dois inicializadores compartilham esta configuracao.
 $configPath = Join-Path $PSScriptRoot "perfil_chrome_organizador.txt"
 $selected = $null
 if ((-not $ChooseProfile) -and (Test-Path $configPath)) {
@@ -56,7 +62,7 @@ if ((-not $ChooseProfile) -and (Test-Path $configPath)) {
 
 if ($null -eq $selected) {
     $form = New-Object System.Windows.Forms.Form
-    $form.Text = "Escolher perfil do Google Chrome"
+    $form.Text = "Escolher perfil do Chrome - $AppName"
     $form.Size = New-Object System.Drawing.Size(480, 205)
     $form.StartPosition = "CenterScreen"
     $form.FormBorderStyle = "FixedDialog"
@@ -65,7 +71,7 @@ if ($null -eq $selected) {
     $form.TopMost = $true
 
     $label = New-Object System.Windows.Forms.Label
-    $label.Text = "Selecione o usuario/perfil do Chrome que sera usado pelo Organizador:"
+    $label.Text = "Selecione o perfil do Chrome que sera utilizado pelo sistema:"
     $label.AutoSize = $false
     $label.Location = New-Object System.Drawing.Point(18, 18)
     $label.Size = New-Object System.Drawing.Size(430, 38)
@@ -101,11 +107,13 @@ if ($null -eq $selected) {
     Set-Content -LiteralPath $configPath -Value $selected.Directory -Encoding ASCII
 }
 
-# Usa o perfil normal do Chrome do usuario atual do Windows e abre uma nova janela.
+# Abre o HTML solicitado usando o mesmo perfil memorizado do Chrome.
 $uri = ([System.Uri]::new((Resolve-Path -LiteralPath $HtmlPath).Path)).AbsoluteUri
+$profileArgument = '--profile-directory="{0}"' -f $selected.Directory
+$uriArgument = '"{0}"' -f $uri
 Start-Process -FilePath $chrome -ArgumentList @(
-    "--profile-directory=`"$($selected.Directory)`"",
+    $profileArgument,
     "--new-window",
     "--start-fullscreen",
-    "`"$uri`""
+    $uriArgument
 ) -WindowStyle Maximized
