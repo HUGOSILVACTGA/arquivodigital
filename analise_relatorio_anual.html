@@ -394,7 +394,7 @@ function printOnlyTable(){
  if(!w){alert('O navegador bloqueou a janela de impressão. Permita pop-ups para este site e tente novamente.');return;}
  const doc=w.document;
  doc.open();
- doc.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detalhamento do Relatório Anual — 2026/2027</title>
+ doc.write(`<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Detalhamento do Relatório Anual — ${exercicio}</title>
  <style>
  @page{size:A4 landscape;margin:13mm}
  *{box-sizing:border-box}
@@ -422,7 +422,7 @@ function printOnlyTable(){
  .footer{margin-top:17px;padding-top:10px;border-top:1px solid #e2e6ef;display:flex;justify-content:space-between;color:#7b8494;font-size:10px}
  @media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
  </style></head><body><main class="sheet">
- <header class="heading"><div><div class="eyebrow">Relatório financeiro · Exercício 2026/2027</div><h1>Detalhamento do Relatório Anual</h1><div class="sub">Contas a receber, contas a pagar e pedidos de compra</div></div><div class="period">NOVEMBRO — MARÇO<br>5 MESES ANALISADOS</div></header>
+ <header class="heading"><div><div class="eyebrow">Relatório financeiro · Exercício ${exercicio}</div><h1>Detalhamento do Relatório Anual</h1><div class="sub">Contas a receber, contas a pagar e pedidos de compra</div></div><div class="period">${labels[0]?.toUpperCase()||"INÍCIO"} — ${labels.at(-1)?.toUpperCase()||"FIM"}<br>${labels.length} MESES ANALISADOS</div></header>
  <p class="table-caption">Valores em reais (R$) · Saldo inicial apresentado separadamente · Total geral conforme planilha de referência</p>
  ${table.outerHTML}
  <footer class="footer"><span>Fonte: RELATÓRIO ANUAL — CONTAS A RECEBER E PAGAR</span><span>Documento para impressão</span></footer>
